@@ -1,0 +1,58 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-gray-50 text-gray-900;
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply px-6 py-2.5 bg-blue-600 text-white rounded-lg font-medium 
+           hover:bg-blue-700 active:bg-blue-800 
+           transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2;
+  }
+  .btn-secondary {
+    @apply px-6 py-2.5 bg-white text-gray-700 rounded-lg font-medium border border-gray-300
+           hover:bg-gray-50 active:bg-gray-100
+           transition-colors focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2;
+  }
+  .card {
+    @apply bg-white rounded-xl shadow-sm border border-gray-200 p-6;
+  }
+  .input {
+    @apply w-full px-4 py-2.5 border border-gray-300 rounded-lg
+           focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
+           transition-shadow;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* 文件拖放区域 */
+.drop-zone {
+  border: 2px dashed #cbd5e1;
+  transition: all 0.2s ease;
+}
+.drop-zone.drag-over {
+  border-color: #3b82f6;
+  background-color: #eff6ff;
+}
+
+/* 扫描模式按钮 */
+.mode-btn {
+  @apply px-4 py-2 text-sm font-medium rounded-lg border transition-all;
+}
+.mode-btn.active {
+  @apply bg-blue-600 text-white border-blue-600;
+}
+.mode-btn:not(.active) {
+  @apply bg-white text-gray-600 border-gray-300 hover:border-blue-400;
+}

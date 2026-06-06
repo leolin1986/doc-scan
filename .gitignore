@@ -1,0 +1,6 @@
+node_modules/
+.next/
+*.log
+.atomcode/
+analysis_logs/
+tsconfig.tsbuildinfo
