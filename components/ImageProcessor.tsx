@@ -168,8 +168,9 @@ export default function ImageProcessor() {
       const det = await detectDocumentCorners(currentImage);
       setLastCorners(det.corners);
       setImageDimensions({ w: det.width, h: det.height });
-    } catch (err) {
+    } catch (err: any) {
       console.warn("自动检测失败，使用全图边界", err);
+      alert("角点检测失败: " + (err?.message || err || "未知错误"));
       setLastCorners(null);
     } finally {
       setIsProcessing(false);
@@ -191,9 +192,9 @@ export default function ImageProcessor() {
         activeMode
       );
       setProcessedImages((prev) => ({ ...prev, [selectedIndex]: res }));
-    } catch (err) {
+    } catch (err: any) {
       console.error("手动校正处理失败:", err);
-      alert("处理失败，请重试");
+      alert("处理失败: " + (err?.message || err || "未知错误"));
     } finally {
       setIsProcessing(false);
     }
@@ -260,14 +261,6 @@ export default function ImageProcessor() {
           <p className="text-sm text-gray-400">
             支持 JPG / PNG / WebP，一次最多 {MAX_IMAGES} 张
           </p>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            multiple
-            onChange={handleInputChange}
-            className="hidden"
-          />
         </div>
       ) : (
         <div className="card">
@@ -400,6 +393,15 @@ export default function ImageProcessor() {
           onCancel={() => setShowEditor(false)}
         />
       )}
+      {/* 隐藏的 file input，始终存在于 DOM */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        multiple
+        onChange={handleInputChange}
+        className="hidden"
+      />
     </div>
   );
 }

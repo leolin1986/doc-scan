@@ -725,7 +725,7 @@ async function processImageAsync(
   imageData: ImageData,
   corners: CornerPoints,
   mode: ScanMode
-): Promise<{ buffer: ArrayBuffer; width: number; height: number }> {
+): Promise<{ pixels: ArrayBuffer; width: number; height: number }> {
   const src = cv.matFromImageData(imageData);
 
   const docW = Math.round(
@@ -787,13 +787,12 @@ async function processImageAsync(
     finalData = applyShadowRemoval(warpedData);
   }
 
-  // 输出为 PNG buffer（OffscreenCanvas 在 worker 中可用）
-  const outCanvas = new OffscreenCanvas(finalData.width, finalData.height);
-  outCanvas.getContext("2d")!.putImageData(finalData, 0, 0);
-  const blob = await outCanvas.convertToBlob({ type: "image/png" });
-  const buffer = await blob.arrayBuffer();
-
-  return { buffer, width: finalData.width, height: finalData.height };
+  // 返回原始像素数据（避免依赖 OffscreenCanvas，部分手机不支持）
+  return {
+    pixels: finalData.data.buffer,
+    width: finalData.width,
+    height: finalData.height,
+  };
 }
 
 // ==================== 消息处理 ====================
@@ -825,8 +824,8 @@ self.onmessage = async (e: MessageEvent<WorkerRequest>) => {
         success: true,
         result,
       };
-      // 用 transferable 传递 buffer，避免拷贝
-      self.postMessage(response, [result.buffer]);
+      // 用 transferable 传递像素数据，避免拷贝
+      self.postMessage(response, [result.pixels]);
     }
   } catch (err: any) {
     const response: WorkerResponse = {

@@ -99,13 +99,17 @@ export async function processImageInWorker(
     mode,
   });
 
-  // result.buffer 是 ArrayBuffer，转为 data URL
-  const blob = new Blob([result.buffer], { type: "image/png" });
-  const dataUrl = await new Promise<string>((resolve) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result as string);
-    reader.readAsDataURL(blob);
-  });
+  // result.pixels 是 ArrayBuffer，在主线程创建 PNG（避免 Worker 中 OffscreenCanvas 兼容问题）
+  const resultImageData = new ImageData(
+    new Uint8ClampedArray(result.pixels),
+    result.width,
+    result.height
+  );
+  const canvas = document.createElement("canvas");
+  canvas.width = result.width;
+  canvas.height = result.height;
+  canvas.getContext("2d")!.putImageData(resultImageData, 0, 0);
+  const dataUrl = canvas.toDataURL("image/png");
 
   return {
     dataUrl,
