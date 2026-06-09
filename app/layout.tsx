@@ -23,8 +23,7 @@ export default function RootLayout({
   return (
     <html lang="zh-CN">
       <head>
-        {/* AdSense 广告代码占位 — 上线后替换 */}
-        {/* <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossOrigin="anonymous"></script> */}
+        {/* 广告通过 AdBanner 组件加载（AADS） */}
       </head>
       <body className="min-h-screen flex flex-col">
         <Header />

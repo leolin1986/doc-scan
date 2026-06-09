@@ -1,6 +1,7 @@
 "use client";
 import Image from "next/image";
 import ImageProcessor from "@/components/ImageProcessor";
+import AdBanner from "@/components/AdBanner";
 
 export default function ScanPage() {
   return (
@@ -14,17 +15,13 @@ export default function ScanPage() {
 
       {/* Ad Banner - Top */}
       <div className="w-full max-w-4xl mb-4">
-        <div className="h-16 bg-gray-100 rounded-lg flex items-center justify-center text-sm text-gray-400">
-          📢 广告位 (728×90)
-        </div>
+        <AdBanner size="large" />
       </div>
 
       <ImageProcessor />
 
       <div className="w-full max-w-4xl mt-6">
-        <div className="h-16 bg-gray-100 rounded-lg flex items-center justify-center text-sm text-gray-400">
-          📢 广告位 (728×90)
-        </div>
+        <AdBanner size="large" />
       </div>
     </div>
   );
