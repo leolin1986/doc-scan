@@ -28,9 +28,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Ad Banner */}
-      <AdBanner size="large" />
-
       {/* Features */}
       <section className="w-full py-12 px-4">
         <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -90,8 +87,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Ad Banner */}
-      <AdBanner size="medium" />
+      <AdBanner />
     </div>
   );
 }

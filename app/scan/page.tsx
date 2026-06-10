@@ -1,5 +1,4 @@
 "use client";
-import Image from "next/image";
 import ImageProcessor from "@/components/ImageProcessor";
 import AdBanner from "@/components/AdBanner";
 
@@ -13,15 +12,14 @@ export default function ScanPage() {
         </p>
       </div>
 
-      {/* Ad Banner - Top */}
       <div className="w-full max-w-4xl mb-4">
-        <AdBanner size="large" />
+        <AdBanner />
       </div>
 
       <ImageProcessor />
 
       <div className="w-full max-w-4xl mt-6">
-        <AdBanner size="large" />
+        <AdBanner />
       </div>
     </div>
   );

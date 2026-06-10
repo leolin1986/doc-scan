@@ -1,19 +1,11 @@
-/**
- * 广告位 Banner 组件
- */
-
-interface AdBannerProps {
-  size?: "large" | "medium" | "small";
-}
-
-export default function AdBanner({ size = "large" }: AdBannerProps) {
+export default function AdBanner() {
   return (
     <div className="w-full flex justify-center my-4">
-      <div id="frame" style={{ width: "100%", margin: "auto", position: "relative", zIndex: 99998 }}>
+      <div className="w-full max-w-4xl">
         <iframe
           data-aa="2442668"
           src="//acceptable.a-ads.com/2442668/?size=Adaptive"
-          style={{ border: 0, padding: 0, width: "70%", height: "auto", overflow: "hidden", display: "block", margin: "auto" }}
+          style={{ border: 0, width: "100%", height: "auto", overflow: "hidden", display: "block" }}
           title="广告"
         />
       </div>
