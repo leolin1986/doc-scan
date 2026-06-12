@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import type { Point, CornerPoints } from "@/utils/imageProcess";
+import { useTranslation } from "@/i18n";
 
 interface CornerEditorProps {
   imageSrc: string;
@@ -11,7 +12,6 @@ interface CornerEditorProps {
   onCancel: () => void;
 }
 
-/** 可拖动四角编辑器 — 像扫描全能王那样调整文档边界 */
 export default function CornerEditor({
   imageSrc,
   imageWidth,
@@ -20,6 +20,7 @@ export default function CornerEditor({
   onConfirm,
   onCancel,
 }: CornerEditorProps) {
+  const { t } = useTranslation();
   const containerRef = useRef<HTMLDivElement>(null);
   const [corners, setCorners] = useState<CornerPoints>(initialCorners);
   const [dragIdx, setDragIdx] = useState<number>(-1);
@@ -147,10 +148,10 @@ export default function CornerEditor({
         {/* 顶部栏 */}
         <div className="flex items-center justify-between px-5 py-3 border-b border-gray-200">
           <h3 className="text-lg font-semibold text-gray-800">
-            ✋ 调整文档边界
+            {t("editor.title")}
           </h3>
           <p className="text-xs text-gray-400">
-            拖动四角把手调整，系统将自动对齐为矩形文档
+            {t("editor.hint")}
           </p>
         </div>
 
@@ -163,7 +164,7 @@ export default function CornerEditor({
           {/* 原始图片 */}
           <img
             src={imageSrc}
-            alt="原始图片"
+            alt={t("editor.alt")}
             className="w-full h-full object-contain select-none pointer-events-none"
             draggable={false}
           />
@@ -272,13 +273,13 @@ export default function CornerEditor({
             className="px-5 py-2 rounded-xl text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 transition-colors"
             onClick={onCancel}
           >
-            取消
+            {t("editor.cancel")}
           </button>
           <button
             className="px-5 py-2 rounded-xl text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 transition-colors"
             onClick={() => onConfirm(corners)}
           >
-            ✓ 确认裁剪
+            {t("editor.confirm")}
           </button>
         </div>
       </div>

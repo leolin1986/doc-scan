@@ -9,17 +9,13 @@ import {
   CornerPoints,
 } from "@/utils/imageProcess";
 import CornerEditor from "./CornerEditor";
-
-// 扫描模式定义
-const SCAN_MODES: ModeOption[] = [
-  { id: "bw", label: "黑白扫描", desc: "黑白文档效果", icon: "⬛" },
-  { id: "color", label: "彩色清晰", desc: "保留色彩增强", icon: "🌈" },
-  { id: "enhanced", label: "去阴影增强", desc: "去除阴影更清晰", icon: "✨" },
-];
+import { useTranslation } from "@/i18n";
 
 const MAX_IMAGES = 3;
 
 export default function ImageProcessor() {
+  const { t } = useTranslation();
+
   const [images, setImages] = useState<string[]>([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [processedImages, setProcessedImages] = useState<Record<number, ScanResult>>({});
@@ -37,6 +33,13 @@ export default function ImageProcessor() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const currentImage = images[selectedIndex] || null;
+
+  // 扫描模式定义（支持翻译）
+  const SCAN_MODES: ModeOption[] = [
+    { id: "bw", label: t("modes.bw"), desc: t("modes.bw_desc"), icon: "⬛" },
+    { id: "color", label: t("modes.color"), desc: t("modes.color_desc"), icon: "🌈" },
+    { id: "enhanced", label: t("modes.enhanced"), desc: t("modes.enhanced_desc"), icon: "✨" },
+  ];
 
   // 加载多张图片（异步批量）
   const loadImages = useCallback(async (files: File[]): Promise<string[]> => {
@@ -59,7 +62,7 @@ export default function ImageProcessor() {
         f.type.startsWith("image/")
       );
       if (files.length === 0) {
-        alert("请上传图片文件");
+        alert(t("upload.alert_not_image"));
         return;
       }
 
@@ -68,9 +71,11 @@ export default function ImageProcessor() {
       setImages((prev) => {
         if (prev.length + newUrls.length > MAX_IMAGES) {
           alert(
-            `最多上传 ${MAX_IMAGES} 张图片，已上传 ${prev.length} 张，还能上传 ${
-              MAX_IMAGES - prev.length
-            } 张`
+            t("upload.alert_max", {
+              max: MAX_IMAGES,
+              current: prev.length,
+              remain: MAX_IMAGES - prev.length,
+            })
           );
           return prev;
         }
@@ -85,7 +90,7 @@ export default function ImageProcessor() {
         return [...prev, ...newUrls];
       });
     },
-    [loadImages]
+    [loadImages, t]
   );
 
   // 拖放处理（支持多文件）
@@ -170,7 +175,7 @@ export default function ImageProcessor() {
       setImageDimensions({ w: det.width, h: det.height });
     } catch (err: any) {
       console.warn("自动检测失败，使用全图边界", err);
-      alert("角点检测失败: " + (err?.message || err || "未知错误"));
+      alert(t("error.corner_detect", { msg: err?.message || err || "未知错误" }));
       setLastCorners(null);
     } finally {
       setIsProcessing(false);
@@ -194,7 +199,7 @@ export default function ImageProcessor() {
       setProcessedImages((prev) => ({ ...prev, [selectedIndex]: res }));
     } catch (err: any) {
       console.error("手动校正处理失败:", err);
-      alert("处理失败: " + (err?.message || err || "未知错误"));
+      alert(t("error.process_fail", { msg: err?.message || err || "未知错误" }));
     } finally {
       setIsProcessing(false);
     }
@@ -256,10 +261,10 @@ export default function ImageProcessor() {
         >
           <div className="text-5xl mb-4">📷</div>
           <p className="text-lg font-medium text-gray-700 mb-2">
-            拖放图片到此处，或点击上传
+            {t("upload.drop_here")}
           </p>
           <p className="text-sm text-gray-400">
-            支持 JPG / PNG / WebP，一次最多 {MAX_IMAGES} 张
+            {t("upload.formats", { max: MAX_IMAGES })}
           </p>
         </div>
       ) : (
@@ -275,7 +280,7 @@ export default function ImageProcessor() {
             >
               <img
                 src={displayedImage}
-                alt="预览"
+                alt={t("preview.alt")}
                 className="max-w-full max-h-[60vh] object-contain"
                 style={{ display: "block" }}
               />
@@ -283,7 +288,7 @@ export default function ImageProcessor() {
               <button
                 onClick={() => handleRemoveImage(selectedIndex)}
                 className="absolute top-2 right-2 w-8 h-8 rounded-full bg-black/50 hover:bg-black/70 text-white flex items-center justify-center text-lg transition-colors z-10"
-                title="删除当前图片"
+                title={t("preview.delete_title")}
               >
                 ✕
               </button>
@@ -304,7 +309,7 @@ export default function ImageProcessor() {
                 >
                   <img
                     src={src}
-                    alt={`图片 ${i + 1}`}
+                    alt={t("preview.image_alt", { index: i + 1 })}
                     className="w-full h-full object-cover"
                   />
                 </button>
@@ -323,7 +328,7 @@ export default function ImageProcessor() {
               <button
                 onClick={() => fileInputRef.current?.click()}
                 className="w-16 h-16 rounded-lg border-2 border-dashed border-gray-300 hover:border-violet-400 text-gray-400 hover:text-violet-500 text-2xl flex items-center justify-center transition-colors"
-                title="添加图片"
+                title={t("preview.add_title")}
               >
                 +
               </button>
@@ -338,23 +343,23 @@ export default function ImageProcessor() {
                   className="btn-primary"
                   onClick={handleSelectCorners}
                 >
-                  {isProcessing ? "处理中..." : "🎯 手动选择端点"}
+                  {isProcessing ? t("actions.processing") : t("actions.select_corners")}
                 </button>
               )}
               {hasProcessed && (
                 <>
                   <button className="btn-primary" onClick={handleDownload}>
-                    下载扫描件
+                    {t("actions.download")}
                   </button>
                   <button className="btn-secondary" onClick={handleOpenEditor}>
-                    ✋ 手动调整
+                    {t("actions.manual_adjust")}
                   </button>
                 </>
               )}
             </div>
             <div className="flex gap-2">
               <button className="btn-secondary" onClick={handleReset}>
-                重新上传
+                {t("actions.reupload")}
               </button>
               {hasProcessed && (
                 <button
@@ -367,7 +372,7 @@ export default function ImageProcessor() {
                     })
                   }
                 >
-                  查看原图
+                  {t("actions.view_original")}
                 </button>
               )}
             </div>

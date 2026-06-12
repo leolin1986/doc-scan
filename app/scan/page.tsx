@@ -1,14 +1,17 @@
 "use client";
 import ImageProcessor from "@/components/ImageProcessor";
 import AdBanner from "@/components/AdBanner";
+import { useTranslation } from "@/i18n";
 
 export default function ScanPage() {
+  const { t } = useTranslation();
+
   return (
     <div className="flex flex-col items-center px-4 py-8">
       <div className="text-center mb-6">
-        <h1 className="text-2xl font-bold mb-2">文档扫描</h1>
+        <h1 className="text-2xl font-bold mb-2">{t("scan.title")}</h1>
         <p className="text-sm text-gray-500">
-          上传图片，自动转扫描件效果
+          {t("scan.subtitle")}
         </p>
       </div>
 

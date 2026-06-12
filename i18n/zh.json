@@ -1,0 +1,72 @@
+{
+  "nav.scan": "开始扫描",
+  "nav.guide": "使用说明",
+  "nav.about": "关于我们",
+
+  "hero.title_prefix": "一键把图片变成",
+  "hero.title_highlight": "干净扫描件",
+  "hero.subtitle": "上传照片或截图，自动边缘检测 + 透视校正 + 图像增强",
+  "hero.subtitle2": "3 种扫描模式，媲美扫描全能王",
+  "hero.cta": "立即开始扫描 →",
+  "hero.note": "完全免费 · 浏览器端处理 · 不上传服务器",
+
+  "features.auto_crop_title": "自动边缘检测",
+  "features.auto_crop_desc": "智能识别文档边缘，自动裁剪背景，只保留文档区域",
+  "features.perspective_title": "透视校正",
+  "features.perspective_desc": "手机拍摄的倾斜文档自动拉正，恢复端正的扫描效果",
+  "features.modes_title": "3 种扫描模式",
+  "features.modes_desc": "黑白文档 / 彩色清晰 / 去阴影增强，满足不同场景需求",
+
+  "howto.title": "三步搞定",
+  "howto.step1_title": "上传图片",
+  "howto.step1_desc": "拍照 / 截图 / 相册导入",
+  "howto.step2_title": "自动处理",
+  "howto.step2_desc": "边缘检测 + 增强",
+  "howto.step3_title": "下载扫描件",
+  "howto.step3_desc": "PNG / JPG / PDF",
+
+  "scan.title": "文档扫描",
+  "scan.subtitle": "上传图片，自动转扫描件效果",
+
+  "modes.bw": "黑白扫描",
+  "modes.bw_desc": "黑白文档效果",
+  "modes.color": "彩色清晰",
+  "modes.color_desc": "保留色彩增强",
+  "modes.enhanced": "去阴影增强",
+  "modes.enhanced_desc": "去除阴影更清晰",
+
+  "upload.drop_here": "拖放图片到此处，或点击上传",
+  "upload.formats": "支持 JPG / PNG / WebP，一次最多 {max} 张",
+  "upload.alert_not_image": "请上传图片文件",
+  "upload.alert_max": "最多上传 {max} 张图片，已上传 {current} 张，还能上传 {remain} 张",
+
+  "preview.alt": "预览",
+  "preview.delete_title": "删除当前图片",
+  "preview.add_title": "添加图片",
+  "preview.image_alt": "图片 {index}",
+
+  "actions.processing": "处理中...",
+  "actions.select_corners": "🎯 手动选择端点",
+  "actions.download": "下载扫描件",
+  "actions.manual_adjust": "✋ 手动调整",
+  "actions.reupload": "重新上传",
+  "actions.view_original": "查看原图",
+
+  "editor.title": "✋ 调整文档边界",
+  "editor.hint": "拖动四角把手调整，系统将自动对齐为矩形文档",
+  "editor.cancel": "取消",
+  "editor.confirm": "✓ 确认裁剪",
+  "editor.alt": "原始图片",
+
+  "footer.copyright": "© 2026 DocScan. 免费在线文档扫描工具",
+  "footer.features": "支持：黑白扫描 · 彩色清晰 · 去阴影增强 · PDF 导出",
+
+  "error.corner_detect": "角点检测失败: {msg}",
+  "error.process_fail": "处理失败: {msg}",
+
+  "meta.title": "在线图片转扫描件 | DocScan - 免费文档扫描工具",
+  "meta.description": "免费在线图片转扫描件工具，自动边缘检测、透视校正、图像增强。支持黑白扫描、彩色扫描、去阴影模式。",
+  "meta.keywords": "图片转扫描件,在线扫描,文档扫描,图片增强,边缘检测,透视校正,免费扫描工具",
+  "meta.og_title": "DocScan - 免费在线文档扫描工具",
+  "meta.og_description": "拍照/上传图片，一键转扫描件效果"
+}

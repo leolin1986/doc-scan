@@ -1,0 +1,72 @@
+{
+  "nav.scan": "Start Scanning",
+  "nav.guide": "User Guide",
+  "nav.about": "About Us",
+
+  "hero.title_prefix": "Turn Images into",
+  "hero.title_highlight": "Clean Scans",
+  "hero.subtitle": "Upload photos or screenshots — auto edge detection + perspective correction + image enhancement",
+  "hero.subtitle2": "3 scan modes, rivaling CamScanner",
+  "hero.cta": "Start Scanning →",
+  "hero.note": "Completely Free · Processed in Browser · No Server Upload",
+
+  "features.auto_crop_title": "Auto Edge Detection",
+  "features.auto_crop_desc": "Intelligently detect document edges, auto-crop background, keep only the document area",
+  "features.perspective_title": "Perspective Correction",
+  "features.perspective_desc": "Auto-straighten tilted documents shot on phone for a clean scan look",
+  "features.modes_title": "3 Scan Modes",
+  "features.modes_desc": "B&W Document / Color Clear / Shadow Removal for different needs",
+
+  "howto.title": "Done in 3 Steps",
+  "howto.step1_title": "Upload Image",
+  "howto.step1_desc": "Photo / Screenshot / Gallery",
+  "howto.step2_title": "Auto Process",
+  "howto.step2_desc": "Edge Detection + Enhancement",
+  "howto.step3_title": "Download Scan",
+  "howto.step3_desc": "PNG / JPG / PDF",
+
+  "scan.title": "Document Scanner",
+  "scan.subtitle": "Upload an image, auto-convert to scan effect",
+
+  "modes.bw": "B&W Scan",
+  "modes.bw_desc": "Black & white document",
+  "modes.color": "Color Clear",
+  "modes.color_desc": "Keep colors, enhanced",
+  "modes.enhanced": "Shadow Removal",
+  "modes.enhanced_desc": "Remove shadows, clearer",
+
+  "upload.drop_here": "Drop images here, or click to upload",
+  "upload.formats": "Supports JPG / PNG / WebP, up to {max} images",
+  "upload.alert_not_image": "Please upload image files",
+  "upload.alert_max": "Max {max} images. Already uploaded {current}, can add {remain} more",
+
+  "preview.alt": "Preview",
+  "preview.delete_title": "Delete current image",
+  "preview.add_title": "Add image",
+  "preview.image_alt": "Image {index}",
+
+  "actions.processing": "Processing...",
+  "actions.select_corners": "🎯 Select Corners",
+  "actions.download": "Download Scan",
+  "actions.manual_adjust": "✋ Manual Adjust",
+  "actions.reupload": "Re-upload",
+  "actions.view_original": "View Original",
+
+  "editor.title": "✋ Adjust Document Boundary",
+  "editor.hint": "Drag the four corner handles. The system will auto-align to a rectangular document.",
+  "editor.cancel": "Cancel",
+  "editor.confirm": "✓ Confirm Crop",
+  "editor.alt": "Original Image",
+
+  "footer.copyright": "© 2026 DocScan. Free Online Document Scanner",
+  "footer.features": "Supports: B&W Scan · Color Clear · Shadow Removal · PDF Export",
+
+  "error.corner_detect": "Corner detection failed: {msg}",
+  "error.process_fail": "Processing failed: {msg}",
+
+  "meta.title": "Image to Scan Online | DocScan - Free Document Scanner",
+  "meta.description": "Free online image-to-scan tool with auto edge detection, perspective correction, and image enhancement. B&W scan, color scan, shadow removal modes.",
+  "meta.keywords": "image to scan,online scanner,document scan,image enhancement,edge detection,perspective correction,free scan tool",
+  "meta.og_title": "DocScan - Free Online Document Scanner",
+  "meta.og_description": "Upload/take a photo, one-click scan effect"
+}
