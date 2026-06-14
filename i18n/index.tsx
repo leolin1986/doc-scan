@@ -44,6 +44,7 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (mounted) {
       document.documentElement.lang = locale === "zh" ? "zh-CN" : "en";
+      document.title = translations[locale]["meta.title"] || translations["zh"]["meta.title"];
     }
   }, [locale, mounted]);
 

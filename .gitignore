@@ -1,6 +1,11 @@
 node_modules/
 .next/
+out/
+android/
 *.log
 .atomcode/
 analysis_logs/
 tsconfig.tsbuildinfo
+*.jks
+*.aab
+*.apk

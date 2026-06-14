@@ -10,6 +10,8 @@ import {
 } from "@/utils/imageProcess";
 import CornerEditor from "./CornerEditor";
 import { useTranslation } from "@/i18n";
+import { Filesystem, Directory } from "@capacitor/filesystem";
+import { Share } from "@capacitor/share";
 
 const MAX_IMAGES = 3;
 
@@ -211,13 +213,39 @@ export default function ImageProcessor() {
   };
 
   // 下载结果
-  const handleDownload = () => {
+  const handleDownload = async () => {
     const r = processedImages[selectedIndex];
     if (!r) return;
-    const link = document.createElement("a");
-    link.download = `scanned_${Date.now()}.${r.format}`;
-    link.href = r.dataUrl;
-    link.click();
+    const fileName = `scanned_${Date.now()}.${r.format}`;
+    const isNative = !!(window as any).Capacitor?.isNativePlatform;
+
+    if (isNative) {
+      try {
+        const base64Data = r.dataUrl.split(",")[1];
+        const result = await Filesystem.writeFile({
+          path: fileName,
+          data: base64Data,
+          directory: Directory.Cache,
+        });
+        await Share.share({
+          title: fileName,
+          url: result.uri,
+          dialogTitle: t("actions.download"),
+        });
+      } catch (err: any) {
+        if (
+          err?.message !== "Share canceled" &&
+          err?.message !== "User canceled share"
+        ) {
+          console.error("Save failed:", err);
+        }
+      }
+    } else {
+      const link = document.createElement("a");
+      link.download = fileName;
+      link.href = r.dataUrl;
+      link.click();
+    }
   };
 
   // 全部重置
