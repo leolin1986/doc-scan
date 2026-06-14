@@ -28,6 +28,8 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
     const saved = localStorage.getItem(LOCALE_KEY);
     if (saved === "zh" || saved === "en") {
       setLocaleState(saved);
+    } else if (!navigator.language.startsWith("zh")) {
+      setLocaleState("en");
     }
     setMounted(true);
   }, []);
