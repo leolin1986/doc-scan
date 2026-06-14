@@ -19,7 +19,7 @@ export default function ImageProcessor() {
   const [images, setImages] = useState<string[]>([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [processedImages, setProcessedImages] = useState<Record<number, ScanResult>>({});
-  const [activeMode, setActiveMode] = useState<ScanMode>("bw");
+  const [activeMode, setActiveMode] = useState<ScanMode>("enhanced");
   const [isProcessing, setIsProcessing] = useState(false);
   const [isDragOver, setIsDragOver] = useState(false);
 
@@ -36,9 +36,9 @@ export default function ImageProcessor() {
 
   // 扫描模式定义（支持翻译）
   const SCAN_MODES: ModeOption[] = [
+    { id: "enhanced", label: t("modes.enhanced"), desc: t("modes.enhanced_desc"), icon: "✨" },
     { id: "bw", label: t("modes.bw"), desc: t("modes.bw_desc"), icon: "⬛" },
     { id: "color", label: t("modes.color"), desc: t("modes.color_desc"), icon: "🌈" },
-    { id: "enhanced", label: t("modes.enhanced"), desc: t("modes.enhanced_desc"), icon: "✨" },
   ];
 
   // 加载多张图片（异步批量）
