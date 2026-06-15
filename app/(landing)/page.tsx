@@ -4,6 +4,8 @@ import Link from "next/link";
 import AdBanner from "@/components/AdBanner";
 import { useTranslation } from "@/i18n";
 
+const isCapacitor = process.env.CAPACITOR_BUILD === "true";
+
 export default function HomePage() {
   const { t } = useTranslation();
 
@@ -92,7 +94,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <AdBanner />
+      {!isCapacitor && <AdBanner />}
     </div>
   );
 }

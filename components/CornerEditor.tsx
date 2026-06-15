@@ -30,6 +30,11 @@ export default function CornerEditor({
     scale: 1,
   });
 
+  // 缩放和平移状态
+  const [zoom, setZoom] = useState(1);
+  const [pan, setPan] = useState({ x: 0, y: 0 });
+  const pinchRef = useRef({ initialDist: 0, initialZoom: 1, initialPanX: 0, initialPanY: 0, centerX: 0, centerY: 0 });
+
   // 计算图片在容器中的实际显示位置（object-contain 等效）
   const updateLayout = useCallback(() => {
     const el = containerRef.current;
@@ -58,20 +63,20 @@ export default function CornerEditor({
     return () => window.removeEventListener("resize", updateLayout);
   }, [updateLayout]);
 
-  // 将 DOM 坐标转为图像坐标
+  // 将 DOM 坐标转为图像坐标（考虑缩放和平移）
   const domToImage = useCallback(
     (cx: number, cy: number) => {
       const el = containerRef.current;
       if (!el) return { x: 0, y: 0 };
       const rect = el.getBoundingClientRect();
-      const px = (cx - rect.left - imgLayout.x) / imgLayout.scale;
-      const py = (cy - rect.top - imgLayout.y) / imgLayout.scale;
+      const px = (cx - rect.left - imgLayout.x - pan.x) / (imgLayout.scale * zoom);
+      const py = (cy - rect.top - imgLayout.y - pan.y) / (imgLayout.scale * zoom);
       return {
         x: Math.max(0, Math.min(imageWidth, px)),
         y: Math.max(0, Math.min(imageHeight, py)),
       };
     },
-    [imgLayout, imageWidth, imageHeight]
+    [imgLayout, imageWidth, imageHeight, zoom, pan]
   );
 
   // 鼠标拖拽逻辑
@@ -95,18 +100,20 @@ export default function CornerEditor({
     };
   }, [dragIdx, domToImage]);
 
-  // 触屏拖拽
+  // 触屏拖拽 + 双指缩放
   useEffect(() => {
     if (dragIdx < 0) return;
     const onTouchMove = (e: TouchEvent) => {
       e.preventDefault();
-      const t = e.touches[0];
-      const pt = domToImage(t.clientX, t.clientY);
-      setCorners((prev) => {
-        const next = [...prev] as CornerPoints;
-        next[dragIdx] = pt;
-        return next;
-      });
+      if (e.touches.length === 1 && dragIdx >= 0) {
+        const t = e.touches[0];
+        const pt = domToImage(t.clientX, t.clientY);
+        setCorners((prev) => {
+          const next = [...prev] as CornerPoints;
+          next[dragIdx] = pt;
+          return next;
+        });
+      }
     };
     const onTouchEnd = () => setDragIdx(-1);
     document.addEventListener("touchmove", onTouchMove, { passive: false });
@@ -117,10 +124,49 @@ export default function CornerEditor({
     };
   }, [dragIdx, domToImage]);
 
-  // 图像坐标 → 显示坐标
+  // 双指缩放手势（在容器上，不依赖 dragIdx）
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const getDistance = (t1: Touch, t2: Touch) =>
+      Math.hypot(t1.clientX - t2.clientX, t1.clientY - t2.clientY);
+    const getCenter = (t1: Touch, t2: Touch) => ({
+      x: (t1.clientX + t2.clientX) / 2,
+      y: (t1.clientY + t2.clientY) / 2,
+    });
+    const onTouchStart = (e: TouchEvent) => {
+      if (e.touches.length === 2 && dragIdx < 0) {
+        e.preventDefault();
+        const d = getDistance(e.touches[0], e.touches[1]);
+        const c = getCenter(e.touches[0], e.touches[1]);
+        pinchRef.current = { initialDist: d, initialZoom: zoom, initialPanX: pan.x, initialPanY: pan.y, centerX: c.x, centerY: c.y };
+      }
+    };
+    const onTouchMove = (e: TouchEvent) => {
+      if (e.touches.length === 2 && dragIdx < 0) {
+        e.preventDefault();
+        const d = getDistance(e.touches[0], e.touches[1]);
+        const c = getCenter(e.touches[0], e.touches[1]);
+        const { initialDist, initialZoom, initialPanX, initialPanY, centerX, centerY } = pinchRef.current;
+        const newZoom = Math.max(1, Math.min(5, initialZoom * (d / initialDist)));
+        const newPanX = initialPanX + (c.x - centerX);
+        const newPanY = initialPanY + (c.y - centerY);
+        setZoom(newZoom);
+        setPan({ x: newPanX, y: newPanY });
+      }
+    };
+    el.addEventListener("touchstart", onTouchStart, { passive: false });
+    el.addEventListener("touchmove", onTouchMove, { passive: false });
+    return () => {
+      el.removeEventListener("touchstart", onTouchStart);
+      el.removeEventListener("touchmove", onTouchMove);
+    };
+  }, [dragIdx, zoom, pan]);
+
+  // 图像坐标 → 显示坐标（考虑缩放和平移）
   const imgToDom = (p: Point) => ({
-    x: p.x * imgLayout.scale + imgLayout.x,
-    y: p.y * imgLayout.scale + imgLayout.y,
+    x: p.x * imgLayout.scale * zoom + imgLayout.x + pan.x,
+    y: p.y * imgLayout.scale * zoom + imgLayout.y + pan.y,
   });
 
   // 限制把手在容器内，确保总是可见可拖拽
@@ -134,7 +180,7 @@ export default function CornerEditor({
     p.x < 0 || p.x > imageWidth || p.y < 0 || p.y > imageHeight;
 
   // 把手样式
-  const handleRadius = 12;
+  const handleRadius = 24;
 
   // 把手颜色（TL=青, TR=品红, BR=橙, BL=绿）
   const colors = ["#00bcd4", "#e91e63", "#ff9800", "#4caf50"];
@@ -144,13 +190,13 @@ export default function CornerEditor({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-5xl mx-4 overflow-hidden">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-5xl mx-4 flex flex-col" style={{ maxHeight: '90vh' }}>
         {/* 顶部栏 */}
-        <div className="flex items-center justify-between px-5 py-3 border-b border-gray-200">
+        <div className="flex items-center justify-between px-5 py-3 border-b border-gray-200 shrink-0">
           <h3 className="text-lg font-semibold text-gray-800">
             {t("editor.title")}
           </h3>
-          <p className="text-xs text-gray-400">
+          <p className="text-sm text-gray-400">
             {t("editor.hint")}
           </p>
         </div>
@@ -158,8 +204,8 @@ export default function CornerEditor({
         {/* 图片编辑区 */}
         <div
           ref={containerRef}
-          className="relative w-full overflow-hidden bg-gray-100"
-          style={{ height: "min(70vh, 600px)", cursor: dragIdx >= 0 ? "grabbing" : "default" }}
+          className="relative w-full overflow-hidden bg-gray-100 flex-1 min-h-0"
+          style={{ cursor: dragIdx >= 0 ? "grabbing" : "default", touchAction: "none" }}
         >
           {/* 原始图片 */}
           <img
@@ -167,6 +213,10 @@ export default function CornerEditor({
             alt={t("editor.alt")}
             className="w-full h-full object-contain select-none pointer-events-none"
             draggable={false}
+            style={{
+              transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
+              transformOrigin: `${imgLayout.x}px ${imgLayout.y}px`,
+            }}
           />
 
           {/* 四边形覆盖层（SVG） */}
@@ -268,19 +318,27 @@ export default function CornerEditor({
         </div>
 
         {/* 底部操作栏 */}
-        <div className="flex items-center justify-end gap-3 px-5 py-3 border-t border-gray-200">
+        <div className="flex items-center justify-between gap-3 px-5 py-3 border-t border-gray-200 shrink-0">
           <button
-            className="px-5 py-2 rounded-xl text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 transition-colors"
-            onClick={onCancel}
+            className="px-4 py-3 rounded-xl text-sm font-medium text-gray-500 hover:text-gray-700 transition-colors"
+            onClick={() => { setZoom(1); setPan({ x: 0, y: 0 }); }}
           >
-            {t("editor.cancel")}
+            {zoom > 1 ? `🔍 ${Math.round(zoom * 100)}%` : "🔍"}
           </button>
-          <button
-            className="px-5 py-2 rounded-xl text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 transition-colors"
-            onClick={() => onConfirm(corners)}
-          >
-            {t("editor.confirm")}
-          </button>
+          <div className="flex gap-3">
+            <button
+              className="px-5 py-3 rounded-xl text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 transition-colors"
+              onClick={onCancel}
+            >
+              {t("editor.cancel")}
+            </button>
+            <button
+              className="px-5 py-3 rounded-xl text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 transition-colors"
+              onClick={() => onConfirm(corners)}
+            >
+              {t("editor.confirm")}
+            </button>
+          </div>
         </div>
       </div>
     </div>

@@ -36,6 +36,8 @@
   "modes.enhanced_desc": "Remove shadows, clearer",
 
   "upload.drop_here": "Drop images here, or click to upload",
+  "upload.take_photo": "Take Photo",
+  "upload.from_gallery": "Choose from Gallery",
   "upload.formats": "Supports JPG / PNG / WebP, up to {max} images",
   "upload.alert_not_image": "Please upload image files",
   "upload.alert_max": "Max {max} images. Already uploaded {current}, can add {remain} more",
@@ -48,12 +50,13 @@
   "actions.processing": "Processing...",
   "actions.select_corners": "🎯 Select Corners",
   "actions.download": "Download Scan",
+  "actions.save_to_gallery": "Save to Gallery",
   "actions.manual_adjust": "✋ Manual Adjust",
   "actions.reupload": "Re-upload",
   "actions.view_original": "View Original",
 
   "editor.title": "✋ Adjust Document Boundary",
-  "editor.hint": "Drag the four corner handles. The system will auto-align to a rectangular document.",
+  "editor.hint": "Drag corners to adjust, pinch to zoom",
   "editor.cancel": "Cancel",
   "editor.confirm": "✓ Confirm Crop",
   "editor.alt": "Original Image",

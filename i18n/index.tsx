@@ -21,17 +21,24 @@ const DEFAULT_LOCALE: Locale = "zh";
 const I18nContext = createContext<I18nContextValue | null>(null);
 
 export function I18nProvider({ children }: { children: React.ReactNode }) {
+  // 始终用 DEFAULT_LOCALE 初始化，保证 SSR 与客户端首帧一致，避免 hydration mismatch
   const [locale, setLocaleState] = useState<Locale>(DEFAULT_LOCALE);
-  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const saved = localStorage.getItem(LOCALE_KEY);
-    if (saved === "zh" || saved === "en") {
-      setLocaleState(saved);
-    } else if (!navigator.language.startsWith("zh")) {
-      setLocaleState("en");
-    }
-    setMounted(true);
+    // 客户端挂载后从 localStorage 读取用户偏好
+    let detected: Locale = DEFAULT_LOCALE;
+    try {
+      const saved = localStorage.getItem(LOCALE_KEY);
+      if (saved === "zh" || saved === "en") {
+        detected = saved;
+      } else {
+        detected = navigator.language.startsWith("zh") ? "zh" : "en";
+        localStorage.setItem(LOCALE_KEY, detected);
+      }
+    } catch {}
+    setLocaleState(detected);
+    document.documentElement.lang = detected === "zh" ? "zh-CN" : "en";
+    document.title = translations[detected]["meta.title"] || translations["zh"]["meta.title"];
   }, []);
 
   const setLocale = useCallback((newLocale: Locale) => {
@@ -42,11 +49,9 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
-    if (mounted) {
-      document.documentElement.lang = locale === "zh" ? "zh-CN" : "en";
-      document.title = translations[locale]["meta.title"] || translations["zh"]["meta.title"];
-    }
-  }, [locale, mounted]);
+    document.documentElement.lang = locale === "zh" ? "zh-CN" : "en";
+    document.title = translations[locale]["meta.title"] || translations["zh"]["meta.title"];
+  }, [locale]);
 
   const t = useCallback(
     (key: string, params?: Record<string, string | number>): string => {

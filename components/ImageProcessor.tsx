@@ -14,6 +14,7 @@ import { Filesystem, Directory } from "@capacitor/filesystem";
 import { Share } from "@capacitor/share";
 
 const MAX_IMAGES = 3;
+const isNative = typeof window !== "undefined" && !!(window as any).Capacitor?.isNativePlatform;
 
 export default function ImageProcessor() {
   const { t } = useTranslation();
@@ -33,6 +34,7 @@ export default function ImageProcessor() {
   const [imageDimensions, setImageDimensions] = useState({ w: 0, h: 0 });
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
 
   const currentImage = images[selectedIndex] || null;
 
@@ -217,7 +219,6 @@ export default function ImageProcessor() {
     const r = processedImages[selectedIndex];
     if (!r) return;
     const fileName = `scanned_${Date.now()}.${r.format}`;
-    const isNative = !!(window as any).Capacitor?.isNativePlatform;
 
     if (isNative) {
       try {
@@ -230,7 +231,7 @@ export default function ImageProcessor() {
         await Share.share({
           title: fileName,
           url: result.uri,
-          dialogTitle: t("actions.download"),
+          dialogTitle: t("actions.save_to_gallery"),
         });
       } catch (err: any) {
         if (
@@ -278,23 +279,44 @@ export default function ImageProcessor() {
 
       {/* 上传区域 / 编辑区域 */}
       {images.length === 0 ? (
-        <div
-          className={`drop-zone rounded-2xl p-12 text-center cursor-pointer ${
-            isDragOver ? "drag-over" : ""
-          }`}
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
-          onDrop={handleDrop}
-          onClick={() => fileInputRef.current?.click()}
-        >
-          <div className="text-5xl mb-4">📷</div>
-          <p className="text-lg font-medium text-gray-700 mb-2">
-            {t("upload.drop_here")}
-          </p>
-          <p className="text-sm text-gray-400">
-            {t("upload.formats", { max: MAX_IMAGES })}
-          </p>
-        </div>
+        isNative ? (
+          <div className="rounded-2xl p-6 text-center space-y-4">
+            <div className="text-5xl mb-4">📷</div>
+            <button
+              className="btn-primary w-full text-lg py-4"
+              onClick={(e) => { e.stopPropagation(); cameraInputRef.current?.click(); }}
+            >
+              {t("upload.take_photo")}
+            </button>
+            <button
+              className="btn-secondary w-full text-lg py-4"
+              onClick={(e) => { e.stopPropagation(); fileInputRef.current?.click(); }}
+            >
+              {t("upload.from_gallery")}
+            </button>
+            <p className="text-sm text-gray-400">
+              {t("upload.formats", { max: MAX_IMAGES })}
+            </p>
+          </div>
+        ) : (
+          <div
+            className={`drop-zone rounded-2xl p-6 md:p-12 text-center cursor-pointer ${
+              isDragOver ? "drag-over" : ""
+            }`}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+            onClick={() => fileInputRef.current?.click()}
+          >
+            <div className="text-5xl mb-4">📷</div>
+            <p className="text-lg font-medium text-gray-700 mb-2">
+              {t("upload.drop_here")}
+            </p>
+            <p className="text-sm text-gray-400">
+              {t("upload.formats", { max: MAX_IMAGES })}
+            </p>
+          </div>
+        )
       ) : (
         <div className="card">
           {/* 图片预览 */}
@@ -315,7 +337,7 @@ export default function ImageProcessor() {
               {/* 关闭/删除按钮 */}
               <button
                 onClick={() => handleRemoveImage(selectedIndex)}
-                className="absolute top-2 right-2 w-8 h-8 rounded-full bg-black/50 hover:bg-black/70 text-white flex items-center justify-center text-lg transition-colors z-10"
+                className="absolute top-2 right-2 w-11 h-11 rounded-full bg-black/50 hover:bg-black/70 text-white flex items-center justify-center text-lg transition-colors z-10"
                 title={t("preview.delete_title")}
               >
                 ✕
@@ -346,7 +368,7 @@ export default function ImageProcessor() {
                     e.stopPropagation();
                     handleRemoveImage(i);
                   }}
-                  className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-red-500 text-white text-xs flex items-center justify-center hover:bg-red-600 transition-colors"
+                  className="absolute -top-2 -right-2 w-7 h-7 rounded-full bg-red-500 text-white text-xs flex items-center justify-center hover:bg-red-600 transition-colors"
                 >
                   ✕
                 </button>
@@ -362,9 +384,13 @@ export default function ImageProcessor() {
               </button>
             )}
           </div>
+        </div>
+      )}
 
-          {/* 底部操作栏 */}
-          <div className="flex flex-wrap items-center gap-3 justify-between">
+      {/* 固定底部操作栏 */}
+      {images.length > 0 && (
+        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 z-40" style={{ paddingTop: '12px', paddingBottom: 'max(12px, env(safe-area-inset-bottom))' }}>
+          <div className="max-w-4xl mx-auto flex flex-wrap items-center gap-3 justify-between">
             <div className="flex gap-2">
               {!hasProcessed && (
                 <button
@@ -435,6 +461,17 @@ export default function ImageProcessor() {
         onChange={handleInputChange}
         className="hidden"
       />
+      {/* 隐藏的 camera input（原生环境拍照用） */}
+      {isNative && (
+        <input
+          ref={cameraInputRef}
+          type="file"
+          accept="image/*"
+          capture="environment"
+          onChange={handleInputChange}
+          className="hidden"
+        />
+      )}
     </div>
   );
 }

@@ -26,8 +26,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="zh-CN">
-      <head />
-      <body className="min-h-screen flex flex-col">
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+      </head>
+      <body className="min-h-screen flex flex-col" style={{ paddingTop: 'env(safe-area-inset-top)', paddingBottom: 'env(safe-area-inset-bottom)' }}>
         <I18nProvider>
           <Header />
           <main className="flex-1">{children}</main>

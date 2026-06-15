@@ -36,6 +36,8 @@
   "modes.enhanced_desc": "去除阴影更清晰",
 
   "upload.drop_here": "拖放图片到此处，或点击上传",
+  "upload.take_photo": "拍照",
+  "upload.from_gallery": "从相册选择",
   "upload.formats": "支持 JPG / PNG / WebP，一次最多 {max} 张",
   "upload.alert_not_image": "请上传图片文件",
   "upload.alert_max": "最多上传 {max} 张图片，已上传 {current} 张，还能上传 {remain} 张",
@@ -48,12 +50,13 @@
   "actions.processing": "处理中...",
   "actions.select_corners": "🎯 手动选择端点",
   "actions.download": "下载扫描件",
+  "actions.save_to_gallery": "保存到图库",
   "actions.manual_adjust": "✋ 手动调整",
   "actions.reupload": "重新上传",
   "actions.view_original": "查看原图",
 
   "editor.title": "✋ 调整文档边界",
-  "editor.hint": "拖动四角把手调整，系统将自动对齐为矩形文档",
+  "editor.hint": "拖动四角调整，双指缩放查看细节",
   "editor.cancel": "取消",
   "editor.confirm": "✓ 确认裁剪",
   "editor.alt": "原始图片",
