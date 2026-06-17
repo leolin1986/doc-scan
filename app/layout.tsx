@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -7,6 +7,13 @@ import { I18nProvider } from "@/i18n";
 import zh from "@/i18n/zh.json";
 
 const isCapacitor = process.env.CAPACITOR_BUILD === "true";
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  viewportFit: "cover",
+};
 
 export const metadata: Metadata = {
   title: zh["meta.title"],
@@ -27,7 +34,6 @@ export default function RootLayout({
   return (
     <html lang="zh-CN">
       <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
         <link rel="prefetch" href="/opencv/opencv.js" />
       </head>
       <body className="min-h-screen flex flex-col">

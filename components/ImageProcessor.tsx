@@ -10,16 +10,19 @@ import {
 } from "@/utils/imageProcess";
 import CornerEditor from "./CornerEditor";
 import { useTranslation } from "@/i18n";
-import { Filesystem, Directory } from "@capacitor/filesystem";
-import { Share } from "@capacitor/share";
 import LoadingOverlay from "./LoadingOverlay";
 import { setProgressCallback } from "@/workers/opencvWorkerClient";
 
 const MAX_IMAGES = 3;
-const isNative = typeof window !== "undefined" && !!(window as any).Capacitor?.isNativePlatform;
 
 export default function ImageProcessor() {
   const { t } = useTranslation();
+
+  // 延迟判断是否为原生环境，避免 @capacitor/core 副作用干扰 SSR hydration
+  const [isNative, setIsNative] = useState(false);
+  useEffect(() => {
+    setIsNative(!!(window as any).Capacitor?.isNativePlatform);
+  }, []);
 
   const [images, setImages] = useState<string[]>([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -234,6 +237,8 @@ export default function ImageProcessor() {
 
     if (isNative) {
       try {
+        const { Filesystem, Directory } = await import("@capacitor/filesystem");
+        const { Share } = await import("@capacitor/share");
         const base64Data = r.dataUrl.split(",")[1];
         const result = await Filesystem.writeFile({
           path: fileName,
