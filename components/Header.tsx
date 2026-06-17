@@ -15,13 +15,13 @@ export default function Header() {
           <span className="font-bold text-lg text-gray-900">DocScan</span>
         </Link>
         <nav className="flex items-center gap-4 text-sm">
-          <Link href="/scan" className="text-gray-600 hover:text-blue-600 transition-colors py-2.5 px-2 min-h-[44px] flex items-center">
+          <Link href="/scan" className="text-gray-600 hover:text-blue-600 transition-colors py-1.5 px-2 md:py-2.5 min-h-[44px] md:min-h-0 flex items-center">
             {t("nav.scan")}
           </Link>
-          <Link href="#" className="text-gray-600 hover:text-blue-600 transition-colors py-2.5 px-2 min-h-[44px] flex items-center">
+          <Link href="/guide" className="text-gray-600 hover:text-blue-600 transition-colors py-1.5 px-2 md:py-2.5 min-h-[44px] md:min-h-0 flex items-center">
             {t("nav.guide")}
           </Link>
-          <Link href="#" className="text-gray-600 hover:text-blue-600 transition-colors py-2.5 px-2 min-h-[44px] flex items-center">
+          <Link href="/about" className="text-gray-600 hover:text-blue-600 transition-colors py-1.5 px-2 md:py-2.5 min-h-[44px] md:min-h-0 flex items-center">
             {t("nav.about")}
           </Link>
           <LanguageSwitcher />

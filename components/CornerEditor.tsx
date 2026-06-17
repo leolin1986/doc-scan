@@ -30,9 +30,11 @@ export default function CornerEditor({
     scale: 1,
   });
 
-  // 缩放和平移状态
+  // 缩放和平移状态（用 ref 存最新值，避免 useEffect 依赖导致反复注册事件）
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
+  const zoomRef = useRef(1);
+  const panRef = useRef({ x: 0, y: 0 });
   const pinchRef = useRef({ initialDist: 0, initialZoom: 1, initialPanX: 0, initialPanY: 0, centerX: 0, centerY: 0 });
 
   // 计算图片在容器中的实际显示位置（object-contain 等效）
@@ -124,7 +126,7 @@ export default function CornerEditor({
     };
   }, [dragIdx, domToImage]);
 
-  // 双指缩放手势（在容器上，不依赖 dragIdx）
+  // 双指缩放手势（在容器上，不依赖 dragIdx/zoom/pan，用 ref 读最新值）
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
@@ -139,7 +141,7 @@ export default function CornerEditor({
         e.preventDefault();
         const d = getDistance(e.touches[0], e.touches[1]);
         const c = getCenter(e.touches[0], e.touches[1]);
-        pinchRef.current = { initialDist: d, initialZoom: zoom, initialPanX: pan.x, initialPanY: pan.y, centerX: c.x, centerY: c.y };
+        pinchRef.current = { initialDist: d, initialZoom: zoomRef.current, initialPanX: panRef.current.x, initialPanY: panRef.current.y, centerX: c.x, centerY: c.y };
       }
     };
     const onTouchMove = (e: TouchEvent) => {
@@ -151,6 +153,8 @@ export default function CornerEditor({
         const newZoom = Math.max(1, Math.min(5, initialZoom * (d / initialDist)));
         const newPanX = initialPanX + (c.x - centerX);
         const newPanY = initialPanY + (c.y - centerY);
+        zoomRef.current = newZoom;
+        panRef.current = { x: newPanX, y: newPanY };
         setZoom(newZoom);
         setPan({ x: newPanX, y: newPanY });
       }
@@ -161,7 +165,7 @@ export default function CornerEditor({
       el.removeEventListener("touchstart", onTouchStart);
       el.removeEventListener("touchmove", onTouchMove);
     };
-  }, [dragIdx, zoom, pan]);
+  }, [dragIdx]);
 
   // 图像坐标 → 显示坐标（考虑缩放和平移）
   const imgToDom = (p: Point) => ({
@@ -169,18 +173,13 @@ export default function CornerEditor({
     y: p.y * imgLayout.scale * zoom + imgLayout.y + pan.y,
   });
 
-  // 限制把手在容器内，确保总是可见可拖拽
-  const clampHandle = (dx: number, dy: number, containerW: number, containerH: number) => ({
-    x: Math.max(handleRadius, Math.min(containerW - handleRadius, dx)),
-    y: Math.max(handleRadius, Math.min(containerH - handleRadius, dy)),
-  });
-
   // 判断角点是否在图像边界外
   const isOutOfBounds = (p: Point) =>
     p.x < 0 || p.x > imageWidth || p.y < 0 || p.y > imageHeight;
 
-  // 把手样式
-  const handleRadius = 24;
+  // 把手样式（十字准星 + 大透明触摸区）
+  const handleRadius = 16;
+  const touchSize = 44;
 
   // 把手颜色（TL=青, TR=品红, BR=橙, BL=绿）
   const colors = ["#00bcd4", "#e91e63", "#ff9800", "#4caf50"];
@@ -204,7 +203,7 @@ export default function CornerEditor({
         {/* 图片编辑区 */}
         <div
           ref={containerRef}
-          className="relative w-full overflow-hidden bg-gray-100 flex-1 min-h-0"
+          className="relative w-full bg-gray-100 flex-1"
           style={{ cursor: dragIdx >= 0 ? "grabbing" : "default", touchAction: "none" }}
         >
           {/* 原始图片 */}
@@ -241,34 +240,25 @@ export default function CornerEditor({
             />
           </svg>
 
-          {/* 四个把手（在 DOM 中以便接收鼠标事件） */}
+          {/* 四个把手（十字准星 + 大透明触摸区，transform 居中） */}
           {corners.map((p, i) => {
             const d = imgToDom(p);
-            const el = containerRef.current;
-            const cw = el?.clientWidth ?? 0;
-            const ch = el?.clientHeight ?? 0;
-            const clamped = cw > 0 && ch > 0 ? clampHandle(d.x, d.y, cw, ch) : d;
             const outOfBounds = isOutOfBounds(p);
-            const isClamped = outOfBounds && (clamped.x !== d.x || clamped.y !== d.y);
+            const handleColor = outOfBounds ? "#ff4444" : colors[i];
             return (
               <div key={i}>
-                {/* 把手（始终在可见区域） */}
+                {/* 透明触摸区域（44px，transform 居中对准坐标点） */}
                 <div
-                  className="absolute rounded-full flex items-center justify-center cursor-grab active:cursor-grabbing select-none"
+                  className="absolute flex items-center justify-center"
                   style={{
-                    left: clamped.x - handleRadius,
-                    top: clamped.y - handleRadius,
-                    width: handleRadius * 2,
-                    height: handleRadius * 2,
-                    backgroundColor: colors[i],
-                    color: "#fff",
-                    fontSize: 10,
-                    fontWeight: 700,
-                    boxShadow: isClamped
-                      ? "0 0 0 3px #ff4444, 0 0 0 5px white, 0 2px 8px rgba(0,0,0,0.3)"
-                      : "0 0 0 2px white, 0 2px 8px rgba(0,0,0,0.3)",
+                    left: d.x,
+                    top: d.y,
+                    width: touchSize,
+                    height: touchSize,
+                    transform: "translate(-50%, -50%)",
                     zIndex: 10,
                     touchAction: "none",
+                    cursor: "grab",
                   }}
                   onMouseDown={(e) => {
                     e.preventDefault();
@@ -280,37 +270,53 @@ export default function CornerEditor({
                     setDragIdx(i);
                   }}
                 >
-                  {labels[i]}
-                </div>
-                {/* 越界指示箭头 */}
-                {isClamped && (
+                  {/* 十字准星 SVG */}
                   <svg
-                    className="absolute pointer-events-none"
-                    style={{
-                      left: clamped.x - handleRadius,
-                      top: clamped.y - handleRadius,
-                      width: handleRadius * 2,
-                      height: handleRadius * 2,
-                      zIndex: 9,
-                    }}
-                    viewBox="0 0 24 24"
+                    width={handleRadius * 2}
+                    height={handleRadius * 2}
+                    viewBox={`0 0 ${handleRadius * 2} ${handleRadius * 2}`}
+                    className="pointer-events-none"
+                    style={{ filter: `drop-shadow(0 0 1px rgba(0,0,0,0.5))` }}
                   >
-                    <text
-                      x="12" y="22"
-                      textAnchor="middle"
-                      fontSize="16"
-                      fill="#ff4444"
-                      fontWeight="bold"
-                    >
-                      {(p.x < 0 || p.x > imageWidth) && p.y < 0 ? "↖" :
-                       p.x > imageWidth && p.y < 0 ? "↗" :
-                       p.x > imageWidth && p.y > imageHeight ? "↘" :
-                       p.x < 0 && p.y > imageHeight ? "↙" :
-                       p.y < 0 ? "↑" :
-                       p.y > imageHeight ? "↓" :
-                       p.x < 0 ? "←" : "→"}
-                    </text>
+                    {/* 外圈 */}
+                    <circle
+                      cx={handleRadius}
+                      cy={handleRadius}
+                      r={handleRadius - 2}
+                      fill="none"
+                      stroke={handleColor}
+                      strokeWidth="2"
+                    />
+                    {/* 中心点 */}
+                    <circle
+                      cx={handleRadius}
+                      cy={handleRadius}
+                      r="3"
+                      fill={handleColor}
+                    />
+                    {/* 上 */}
+                    <line x1={handleRadius} y1="0" x2={handleRadius} y2={handleRadius - 5} stroke={handleColor} strokeWidth="2" />
+                    {/* 下 */}
+                    <line x1={handleRadius} y1={handleRadius + 5} x2={handleRadius} y2={handleRadius * 2} stroke={handleColor} strokeWidth="2" />
+                    {/* 左 */}
+                    <line x1="0" y1={handleRadius} x2={handleRadius - 5} y2={handleRadius} stroke={handleColor} strokeWidth="2" />
+                    {/* 右 */}
+                    <line x1={handleRadius + 5} y1={handleRadius} x2={handleRadius * 2} y2={handleRadius} stroke={handleColor} strokeWidth="2" />
                   </svg>
+                </div>
+                {/* 越界指示 */}
+                {outOfBounds && (
+                  <div
+                    className="absolute text-xs font-bold text-red-500 pointer-events-none"
+                    style={{
+                      left: d.x,
+                      top: d.y - touchSize / 2 - 14,
+                      transform: "translateX(-50%)",
+                      zIndex: 11,
+                    }}
+                  >
+                    {labels[i]}
+                  </div>
                 )}
               </div>
             );
@@ -321,7 +327,7 @@ export default function CornerEditor({
         <div className="flex items-center justify-between gap-3 px-5 py-3 border-t border-gray-200 shrink-0">
           <button
             className="px-4 py-3 rounded-xl text-sm font-medium text-gray-500 hover:text-gray-700 transition-colors"
-            onClick={() => { setZoom(1); setPan({ x: 0, y: 0 }); }}
+            onClick={() => { setZoom(1); setPan({ x: 0, y: 0 }); zoomRef.current = 1; panRef.current = { x: 0, y: 0 }; }}
           >
             {zoom > 1 ? `🔍 ${Math.round(zoom * 100)}%` : "🔍"}
           </button>

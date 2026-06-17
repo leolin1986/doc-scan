@@ -12,7 +12,7 @@ export default function LanguageSwitcher() {
   return (
     <button
       onClick={toggle}
-      className="text-gray-600 hover:text-blue-600 transition-colors text-sm font-medium min-w-[44px] min-h-[44px] flex items-center justify-center"
+      className="text-gray-600 hover:text-blue-600 transition-colors text-sm font-medium min-w-[44px] min-h-[44px] md:min-w-0 md:min-h-0 flex items-center justify-center"
       title={locale === "zh" ? "Switch to English" : "切换到中文"}
     >
       {locale === "zh" ? "EN" : "中"}

@@ -12,6 +12,12 @@ const pending = new Map<
   { resolve: (v: any) => void; reject: (e: Error) => void }
 >();
 
+let progressCallback: ((stage: string) => void) | null = null;
+
+export function setProgressCallback(cb: ((stage: string) => void) | null) {
+  progressCallback = cb;
+}
+
 function getWorker(): Worker {
   if (worker) return worker;
 
@@ -21,7 +27,14 @@ function getWorker(): Worker {
   );
 
   worker.onmessage = (e) => {
-    const { id, success, result, error } = e.data;
+    const { id, success, result, error, type } = e.data;
+
+    // 进度广播消息（无 id）
+    if (type === "progress" && progressCallback) {
+      progressCallback(e.data.stage);
+      return;
+    }
+
     const p = pending.get(id);
     if (!p) return;
     pending.delete(id);

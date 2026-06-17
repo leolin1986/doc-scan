@@ -11,12 +11,12 @@
 
 @layer components {
   .btn-primary {
-    @apply px-6 py-3 bg-blue-600 text-white rounded-lg font-medium
+    @apply px-6 py-3 md:py-2.5 bg-blue-600 text-white rounded-lg font-medium
            hover:bg-blue-700 active:bg-blue-800
            transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2;
   }
   .btn-secondary {
-    @apply px-6 py-3 bg-white text-gray-700 rounded-lg font-medium border border-gray-300
+    @apply px-6 py-3 md:py-2.5 bg-white text-gray-700 rounded-lg font-medium border border-gray-300
            hover:bg-gray-50 active:bg-gray-100
            transition-colors focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2;
   }
@@ -48,7 +48,7 @@
 
 /* 扫描模式按钮 */
 .mode-btn {
-  @apply px-4 py-3 text-sm font-medium rounded-lg border transition-all;
+  @apply px-4 py-3 md:py-2 text-sm font-medium rounded-lg border transition-all;
 }
 .mode-btn.active {
   @apply bg-blue-600 text-white border-blue-600;

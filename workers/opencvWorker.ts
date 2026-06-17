@@ -803,8 +803,12 @@ self.onmessage = async (e: MessageEvent<WorkerRequest>) => {
   try {
     // 确保 OpenCV 已加载
     await loadOpenCV();
+    // 广播 progress：OpenCV 已初始化
+    self.postMessage({ type: "progress", stage: "init" });
 
     if (type === "detectCorners") {
+      // 广播 progress：开始检测
+      self.postMessage({ type: "progress", stage: "detect" });
       const result = detectCorners(imageData);
       const response: WorkerResponse = {
         id,

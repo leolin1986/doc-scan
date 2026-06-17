@@ -28,8 +28,9 @@ export default function RootLayout({
     <html lang="zh-CN">
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+        <link rel="prefetch" href="/opencv/opencv.js" />
       </head>
-      <body className="min-h-screen flex flex-col" style={{ paddingTop: 'env(safe-area-inset-top)', paddingBottom: 'env(safe-area-inset-bottom)' }}>
+      <body className="min-h-screen flex flex-col">
         <I18nProvider>
           <Header />
           <main className="flex-1">{children}</main>

@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useRef, useCallback } from "react";
+import React, { useState, useRef, useCallback, useEffect } from "react";
 import {
   processImageWithCorners,
   detectDocumentCorners,
@@ -12,6 +12,8 @@ import CornerEditor from "./CornerEditor";
 import { useTranslation } from "@/i18n";
 import { Filesystem, Directory } from "@capacitor/filesystem";
 import { Share } from "@capacitor/share";
+import LoadingOverlay from "./LoadingOverlay";
+import { setProgressCallback } from "@/workers/opencvWorkerClient";
 
 const MAX_IMAGES = 3;
 const isNative = typeof window !== "undefined" && !!(window as any).Capacitor?.isNativePlatform;
@@ -24,6 +26,16 @@ export default function ImageProcessor() {
   const [processedImages, setProcessedImages] = useState<Record<number, ScanResult>>({});
   const [activeMode, setActiveMode] = useState<ScanMode>("enhanced");
   const [isProcessing, setIsProcessing] = useState(false);
+  const [loadingPhase, setLoadingPhase] = useState<"idle" | "init" | "detect" | "process">("idle");
+
+  // 挂载时注册 progress 回调，卸载时清除
+  useEffect(() => {
+    setProgressCallback((stage: string) => {
+      if (stage === "init") setLoadingPhase("init");
+      else if (stage === "detect") setLoadingPhase("detect");
+    });
+    return () => setProgressCallback(null);
+  }, []);
   const [isDragOver, setIsDragOver] = useState(false);
 
   const hasProcessed = selectedIndex in processedImages;
@@ -172,7 +184,7 @@ export default function ImageProcessor() {
   // 打开手动角点编辑器（自动检测初始位置后打开）
   const handleSelectCorners = async () => {
     if (!currentImage || imageDimensions.w <= 0) return;
-    setIsProcessing(true);
+    setLoadingPhase("init");
     try {
       const det = await detectDocumentCorners(currentImage);
       setLastCorners(det.corners);
@@ -182,7 +194,7 @@ export default function ImageProcessor() {
       alert(t("error.corner_detect", { msg: err?.message || err || "未知错误" }));
       setLastCorners(null);
     } finally {
-      setIsProcessing(false);
+      setLoadingPhase("idle");
       setShowEditor(true);
     }
   };
@@ -193,7 +205,7 @@ export default function ImageProcessor() {
     if (!currentImage) return;
 
     setLastCorners(corners);
-    setIsProcessing(true);
+    setLoadingPhase("process");
     try {
       const res = await processImageWithCorners(
         currentImage,
@@ -205,7 +217,7 @@ export default function ImageProcessor() {
       console.error("手动校正处理失败:", err);
       alert(t("error.process_fail", { msg: err?.message || err || "未知错误" }));
     } finally {
-      setIsProcessing(false);
+      setLoadingPhase("idle");
     }
   };
 
@@ -389,23 +401,24 @@ export default function ImageProcessor() {
 
       {/* 固定底部操作栏 */}
       {images.length > 0 && (
-        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 z-40" style={{ paddingTop: '12px', paddingBottom: 'max(12px, env(safe-area-inset-bottom))' }}>
+        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 z-40" style={{ paddingTop: '12px', paddingBottom: '12px' }}>
           <div className="max-w-4xl mx-auto flex flex-wrap items-center gap-3 justify-between">
             <div className="flex gap-2">
               {!hasProcessed && (
                 <button
                   className="btn-primary"
                   onClick={handleSelectCorners}
+                  disabled={loadingPhase !== "idle"}
                 >
-                  {isProcessing ? t("actions.processing") : t("actions.select_corners")}
+                  {loadingPhase !== "idle" ? t("actions.processing") : t("actions.select_corners")}
                 </button>
               )}
               {hasProcessed && (
                 <>
-                  <button className="btn-primary" onClick={handleDownload}>
+                  <button className="btn-primary" onClick={handleDownload} disabled={loadingPhase !== "idle"}>
                     {t("actions.download")}
                   </button>
-                  <button className="btn-secondary" onClick={handleOpenEditor}>
+                  <button className="btn-secondary" onClick={handleOpenEditor} disabled={loadingPhase !== "idle"}>
                     {t("actions.manual_adjust")}
                   </button>
                 </>
@@ -452,6 +465,11 @@ export default function ImageProcessor() {
           onCancel={() => setShowEditor(false)}
         />
       )}
+      {/* Loading 遮罩 */}
+      {(loadingPhase === "init" || loadingPhase === "detect" || loadingPhase === "process") && (
+        <LoadingOverlay phase={loadingPhase} />
+      )}
+
       {/* 隐藏的 file input，始终存在于 DOM */}
       <input
         ref={fileInputRef}
