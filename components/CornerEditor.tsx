@@ -222,9 +222,9 @@ export default function CornerEditor({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-5xl mx-4 flex flex-col" style={{ maxHeight: '90vh' }}>
+      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-5xl mx-4 flex flex-col" style={{ maxHeight: '90vh', height: '90vh' }}>
         {/* 顶部栏 */}
-        <div className="flex items-center justify-between px-5 py-2 md:py-2 border-b border-gray-200 shrink-0">
+        <div className="flex items-center justify-between px-5 py-2 border-b border-gray-200 shrink-0">
           <h3 className="text-lg font-semibold text-gray-800">
             {t("editor.title")}
           </h3>
@@ -233,11 +233,19 @@ export default function CornerEditor({
           </p>
         </div>
 
-        {/* 图片编辑区 */}
+        {/* 图片编辑区 — 绝对定位填满 header 和 footer 之间 */}
         <div
           ref={containerRef}
-          className="relative w-full bg-gray-100 flex-1 min-h-[60vh]"
-          style={{ cursor: dragIdx >= 0 ? "grabbing" : "default", touchAction: "none" }}
+          className="relative w-full bg-gray-100"
+          style={{
+            cursor: dragIdx >= 0 ? "grabbing" : "default",
+            touchAction: "none",
+            position: "absolute",
+            top: "45px",
+            bottom: "56px",
+            left: 0,
+            right: 0,
+          }}
         >
           {/* 原始图片 */}
           <img
