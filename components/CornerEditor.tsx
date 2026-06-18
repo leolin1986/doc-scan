@@ -233,18 +233,13 @@ export default function CornerEditor({
           </p>
         </div>
 
-        {/* 图片编辑区 — 绝对定位填满 header 和 footer 之间 */}
+        {/* 图片编辑区 — flex-1 填充 header 和 footer 之间 */}
         <div
           ref={containerRef}
-          className="relative w-full bg-gray-100"
+          className="relative w-full bg-gray-100 flex-1 overflow-hidden"
           style={{
             cursor: dragIdx >= 0 ? "grabbing" : "default",
             touchAction: "none",
-            position: "absolute",
-            top: "45px",
-            bottom: "56px",
-            left: 0,
-            right: 0,
           }}
         >
           {/* 原始图片 */}
