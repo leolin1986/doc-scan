@@ -236,7 +236,7 @@ export default function CornerEditor({
         {/* 图片编辑区 */}
         <div
           ref={containerRef}
-          className="relative w-full bg-gray-100 flex-1"
+          className="relative w-full bg-gray-100 flex-1 min-h-[60vh]"
           style={{ cursor: dragIdx >= 0 ? "grabbing" : "default", touchAction: "none" }}
         >
           {/* 原始图片 */}
