@@ -57,6 +57,7 @@
 
   "editor.title": "✋ 调整文档边界",
   "editor.hint": "拖动四角调整，双指缩放查看细节",
+  "editor.hint_desktop": "拖动四角调整，滚轮缩放查看细节",
   "editor.cancel": "取消",
   "editor.confirm": "✓ 确认裁剪",
   "editor.alt": "原始图片",

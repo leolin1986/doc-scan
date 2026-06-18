@@ -3,6 +3,14 @@ import React, { useState, useRef, useEffect, useCallback } from "react";
 import type { Point, CornerPoints } from "@/utils/imageProcess";
 import { useTranslation } from "@/i18n";
 
+function useIsDesktop() {
+  const [isDesktop, setIsDesktop] = useState(false);
+  useEffect(() => {
+    setIsDesktop(window.matchMedia("(pointer: fine)").matches);
+  }, []);
+  return isDesktop;
+}
+
 interface CornerEditorProps {
   imageSrc: string;
   imageWidth: number;
@@ -21,6 +29,7 @@ export default function CornerEditor({
   onCancel,
 }: CornerEditorProps) {
   const { t } = useTranslation();
+  const isDesktop = useIsDesktop();
   const containerRef = useRef<HTMLDivElement>(null);
   const [corners, setCorners] = useState<CornerPoints>(initialCorners);
   const [dragIdx, setDragIdx] = useState<number>(-1);
@@ -167,6 +176,30 @@ export default function CornerEditor({
     };
   }, [dragIdx]);
 
+  // 桌面端鼠标滚轮缩放
+  useEffect(() => {
+    if (!isDesktop) return;
+    const el = containerRef.current;
+    if (!el) return;
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      const rect = el.getBoundingClientRect();
+      const cx = e.clientX - rect.left;
+      const cy = e.clientY - rect.top;
+      const factor = e.deltaY < 0 ? 1.1 : 0.9;
+      const newZoom = Math.max(1, Math.min(5, zoomRef.current * factor));
+      const scale = newZoom / zoomRef.current;
+      const newPanX = cx - scale * (cx - panRef.current.x);
+      const newPanY = cy - scale * (cy - panRef.current.y);
+      zoomRef.current = newZoom;
+      panRef.current = { x: newPanX, y: newPanY };
+      setZoom(newZoom);
+      setPan({ x: newPanX, y: newPanY });
+    };
+    el.addEventListener("wheel", onWheel, { passive: false });
+    return () => el.removeEventListener("wheel", onWheel);
+  }, [isDesktop]);
+
   // 图像坐标 → 显示坐标（考虑缩放和平移）
   const imgToDom = (p: Point) => ({
     x: p.x * imgLayout.scale * zoom + imgLayout.x + pan.x,
@@ -178,8 +211,8 @@ export default function CornerEditor({
     p.x < 0 || p.x > imageWidth || p.y < 0 || p.y > imageHeight;
 
   // 把手样式（十字准星 + 大透明触摸区）
-  const handleRadius = 16;
-  const touchSize = 44;
+  const handleRadius = isDesktop ? 12 : 16;
+  const touchSize = isDesktop ? 28 : 44;
 
   // 把手颜色（TL=青, TR=品红, BR=橙, BL=绿）
   const colors = ["#00bcd4", "#e91e63", "#ff9800", "#4caf50"];
@@ -191,12 +224,12 @@ export default function CornerEditor({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-5xl mx-4 flex flex-col" style={{ maxHeight: '90vh' }}>
         {/* 顶部栏 */}
-        <div className="flex items-center justify-between px-5 py-3 border-b border-gray-200 shrink-0">
+        <div className="flex items-center justify-between px-5 py-2 md:py-2 border-b border-gray-200 shrink-0">
           <h3 className="text-lg font-semibold text-gray-800">
             {t("editor.title")}
           </h3>
           <p className="text-sm text-gray-400">
-            {t("editor.hint")}
+            {isDesktop ? t("editor.hint_desktop") : t("editor.hint")}
           </p>
         </div>
 
@@ -324,22 +357,22 @@ export default function CornerEditor({
         </div>
 
         {/* 底部操作栏 */}
-        <div className="flex items-center justify-between gap-3 px-5 py-3 border-t border-gray-200 shrink-0">
+        <div className="flex items-center justify-between gap-3 px-5 py-2 md:py-2 border-t border-gray-200 shrink-0">
           <button
-            className="px-4 py-3 rounded-xl text-sm font-medium text-gray-500 hover:text-gray-700 transition-colors"
+            className="px-4 py-2.5 md:py-1.5 rounded-xl text-sm font-medium text-gray-500 hover:text-gray-700 transition-colors"
             onClick={() => { setZoom(1); setPan({ x: 0, y: 0 }); zoomRef.current = 1; panRef.current = { x: 0, y: 0 }; }}
           >
             {zoom > 1 ? `🔍 ${Math.round(zoom * 100)}%` : "🔍"}
           </button>
           <div className="flex gap-3">
             <button
-              className="px-5 py-3 rounded-xl text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 transition-colors"
+              className="px-5 py-2.5 md:py-1.5 rounded-xl text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 transition-colors"
               onClick={onCancel}
             >
               {t("editor.cancel")}
             </button>
             <button
-              className="px-5 py-3 rounded-xl text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 transition-colors"
+              className="px-5 py-2.5 md:py-1.5 rounded-xl text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 transition-colors"
               onClick={() => onConfirm(corners)}
             >
               {t("editor.confirm")}

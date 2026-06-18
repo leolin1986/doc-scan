@@ -57,6 +57,7 @@
 
   "editor.title": "✋ Adjust Document Boundary",
   "editor.hint": "Drag corners to adjust, pinch to zoom",
+  "editor.hint_desktop": "Drag corners to adjust, scroll to zoom",
   "editor.cancel": "Cancel",
   "editor.confirm": "✓ Confirm Crop",
   "editor.alt": "Original Image",
