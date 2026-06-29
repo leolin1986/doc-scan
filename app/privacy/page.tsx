@@ -6,7 +6,7 @@ export default function PrivacyPage() {
       <h1 className="text-2xl font-bold mb-6">隐私政策</h1>
 
       <div className="card space-y-6 w-full">
-        <p className="text-sm text-gray-500">最后更新日期：2026年6月17日</p>
+        <p className="text-sm text-gray-500">最后更新日期：2026年6月29日</p>
 
         <section>
           <h2 className="font-semibold text-lg mb-2">一、概述</h2>
@@ -75,7 +75,10 @@ export default function PrivacyPage() {
             如果您对本隐私政策有任何疑问，可以通过以下方式联系我们：
           </p>
           <p className="text-sm text-gray-600 mt-2">
-            邮箱：support@scanfree.tech
+            开发者：梁林
+          </p>
+          <p className="text-sm text-gray-600 mt-2">
+            邮箱：blackboy007pp@hotmail.com
           </p>
         </section>
       </div>

@@ -102,5 +102,11 @@
   "meta.description": "Free online image-to-scan tool with auto edge detection, perspective correction, and image enhancement. B&W scan, color scan, shadow removal modes.",
   "meta.keywords": "image to scan,online scanner,document scan,image enhancement,edge detection,perspective correction,free scan tool",
   "meta.og_title": "DocScan - Free Online Document Scanner",
-  "meta.og_description": "Upload/take a photo, one-click scan effect"
+  "meta.og_description": "Upload/take a photo, one-click scan effect",
+
+  "privacy.title": "Privacy Policy",
+  "privacy.intro": "Before using this app, please read and agree to the Privacy Policy.",
+  "privacy.link": "View full Privacy Policy",
+  "privacy.agree": "I have read and agree to the Privacy Policy",
+  "privacy.confirm": "Agree & Continue"
 }
