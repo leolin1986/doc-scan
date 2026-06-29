@@ -9,3 +9,19 @@ tsconfig.tsbuildinfo
 *.jks
 *.aab
 *.apk
+Screenshot_*.png
+
+# pepk signing tools (temp)
+pepk.jar
+pepk-agent.jar
+docscan-sign.zip
+PepkAgent*.class
+PepkWrapper*.class
+PepkAgent.java
+PepkWrapper.java
+META-INF/
+agent-classes/
+asm-*.jar
+byte-buddy-*.jar
+screenshot_test.js
+应用签名*.png
