@@ -22,6 +22,16 @@ export default function PrivacyPolicyDialog() {
     setShow(false);
   };
 
+  const handleReject = async () => {
+    localStorage.removeItem(STORAGE_KEY);
+    try {
+      const { App } = await import("@capacitor/app");
+      App.exitApp();
+    } catch {
+      // Web 环境无法退出，弹窗保持显示
+    }
+  };
+
   if (!show) return null;
 
   return (
@@ -32,7 +42,6 @@ export default function PrivacyPolicyDialog() {
 
         <Link
           href="/privacy"
-          target="_blank"
           className="text-sm text-blue-600 underline mb-4 inline-block"
         >
           {t("privacy.link")}
@@ -56,6 +65,14 @@ export default function PrivacyPolicyDialog() {
                      hover:bg-blue-700 active:bg-blue-800 transition-colors"
         >
           {t("privacy.confirm")}
+        </button>
+
+        <button
+          onClick={handleReject}
+          className="w-full py-3 mt-2 rounded-lg text-gray-500 font-medium text-sm
+                     hover:text-gray-700 transition-colors"
+        >
+          {t("privacy.reject")}
         </button>
       </div>
     </div>

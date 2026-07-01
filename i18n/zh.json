@@ -25,7 +25,7 @@
   "howto.step3_title": "下载扫描件",
   "howto.step3_desc": "PNG / JPG / PDF",
 
-  "scan.title": "文档扫描",
+  "scan.title": "扫立得",
   "scan.subtitle": "上传图片，自动转扫描件效果",
 
   "modes.bw": "黑白扫描",
@@ -62,7 +62,7 @@
   "editor.confirm": "✓ 确认裁剪",
   "editor.alt": "原始图片",
 
-  "footer.copyright": "© 2026 DocScan. 免费在线文档扫描工具",
+  "footer.copyright": "© 2026 扫立得. 免费在线文档扫描工具",
   "footer.features": "支持：黑白扫描 · 彩色清晰 · 去阴影增强 · PDF 导出",
   "footer.privacy": "隐私政策",
 
@@ -89,7 +89,7 @@
 
   "about.title": "关于我们",
   "about.version": "版本 {version}",
-  "about.description": "DocScan 是一款完全免费的在线文档扫描工具。所有图像处理都在浏览器本地完成，不会上传任何数据到服务器。",
+  "about.description": "扫立得是一款完全免费的在线文档扫描工具。所有图像处理都在浏览器本地完成，不会上传任何数据到服务器。",
   "about.features_title": "功能特点",
   "about.feat1": "完全免费，无需注册",
   "about.feat2": "浏览器端处理，保护隐私",
@@ -98,15 +98,16 @@
   "about.privacy_title": "隐私说明",
   "about.privacy_desc": "您的图片不会上传到任何服务器，所有处理都在本地完成。我们不收集任何个人信息。",
 
-  "meta.title": "在线图片转扫描件 | DocScan - 免费文档扫描工具",
+  "meta.title": "在线图片转扫描件 | 扫立得 - 免费文档扫描工具",
   "meta.description": "免费在线图片转扫描件工具，自动边缘检测、透视校正、图像增强。支持黑白扫描、彩色扫描、去阴影模式。",
   "meta.keywords": "图片转扫描件,在线扫描,文档扫描,图片增强,边缘检测,透视校正,免费扫描工具",
-  "meta.og_title": "DocScan - 免费在线文档扫描工具",
+  "meta.og_title": "扫立得 - 免费在线文档扫描工具",
   "meta.og_description": "拍照/上传图片，一键转扫描件效果",
 
   "privacy.title": "隐私政策",
   "privacy.intro": "在使用本应用前，请您仔细阅读并同意《隐私政策》。",
   "privacy.link": "查看完整隐私政策",
   "privacy.agree": "我已阅读并同意《隐私政策》",
-  "privacy.confirm": "同意并继续"
+  "privacy.confirm": "同意并继续",
+  "privacy.reject": "不同意并退出"
 }

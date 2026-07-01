@@ -108,5 +108,6 @@
   "privacy.intro": "Before using this app, please read and agree to the Privacy Policy.",
   "privacy.link": "View full Privacy Policy",
   "privacy.agree": "I have read and agree to the Privacy Policy",
-  "privacy.confirm": "Agree & Continue"
+  "privacy.confirm": "Agree & Continue",
+  "privacy.reject": "Disagree & Exit"
 }

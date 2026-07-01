@@ -11,7 +11,7 @@ export default function PrivacyPage() {
         <section>
           <h2 className="font-semibold text-lg mb-2">一、概述</h2>
           <p className="text-sm text-gray-600">
-            DocScan（以下简称"本应用"）是一款免费的在线文档扫描工具。我们非常重视您的隐私保护。本隐私政策旨在向您说明我们如何收集、使用和保护您的个人信息。
+            扫立得（以下简称"本应用"）是一款免费的在线文档扫描工具。我们非常重视您的隐私保护。本隐私政策旨在向您说明我们如何收集、使用和保护您的个人信息。
           </p>
         </section>
 
