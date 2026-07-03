@@ -157,6 +157,7 @@ export default function CornerEditor({
       if (e.touches.length === 2 && dragIdx < 0) {
         e.preventDefault();
         const d = getDistance(e.touches[0], e.touches[1]);
+        if (d === 0) return;
         const c = getCenter(e.touches[0], e.touches[1]);
         const { initialDist, initialZoom, initialPanX, initialPanY, centerX, centerY } = pinchRef.current;
         const newZoom = Math.max(1, Math.min(5, initialZoom * (d / initialDist)));

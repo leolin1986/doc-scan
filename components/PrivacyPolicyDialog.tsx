@@ -24,11 +24,15 @@ export default function PrivacyPolicyDialog() {
 
   const handleReject = async () => {
     localStorage.removeItem(STORAGE_KEY);
-    try {
-      const { App } = await import("@capacitor/app");
-      App.exitApp();
-    } catch {
-      // Web 环境无法退出，弹窗保持显示
+    if ((window as any).Capacitor?.isNativePlatform) {
+      try {
+        const { App } = await import("@capacitor/app");
+        App.exitApp();
+      } catch {
+        // ignore
+      }
+    } else {
+      alert("如不同意隐私政策，请关闭本页面。");
     }
   };
 

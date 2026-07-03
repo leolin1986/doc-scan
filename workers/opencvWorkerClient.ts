@@ -60,9 +60,18 @@ function getWorker(): Worker {
 function sendRequest(type: string, payload: any): Promise<any> {
   const w = getWorker();
   const id = nextId++;
+  const TIMEOUT_MS = 60000;
 
   return new Promise((resolve, reject) => {
-    pending.set(id, { resolve, reject });
+    const timer = setTimeout(() => {
+      pending.delete(id);
+      reject(new Error("Worker 请求超时"));
+    }, TIMEOUT_MS);
+
+    pending.set(id, {
+      resolve: (v: any) => { clearTimeout(timer); resolve(v); },
+      reject: (e: Error) => { clearTimeout(timer); reject(e); },
+    });
     w.postMessage({ id, type, ...payload });
   });
 }
@@ -82,9 +91,13 @@ async function imageToImageData(imageSrc: string): Promise<ImageData> {
   const canvas = document.createElement("canvas");
   canvas.width = img.naturalWidth;
   canvas.height = img.naturalHeight;
-  const ctx = canvas.getContext("2d")!;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) throw new Error("无法创建 2D 绘图上下文");
   ctx.drawImage(img, 0, 0);
-  return ctx.getImageData(0, 0, canvas.width, canvas.height);
+  const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  canvas.width = 0;
+  canvas.height = 0;
+  return imageData;
 }
 
 /**
@@ -121,8 +134,12 @@ export async function processImageInWorker(
   const canvas = document.createElement("canvas");
   canvas.width = result.width;
   canvas.height = result.height;
-  canvas.getContext("2d")!.putImageData(resultImageData, 0, 0);
+  const ctx = canvas.getContext("2d");
+  if (!ctx) throw new Error("无法创建 2D 绘图上下文");
+  ctx.putImageData(resultImageData, 0, 0);
   const dataUrl = canvas.toDataURL("image/png");
+  canvas.width = 0;
+  canvas.height = 0;
 
   return {
     dataUrl,

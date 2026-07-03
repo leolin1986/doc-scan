@@ -8,7 +8,7 @@ interface LoadingOverlayProps {
 export default function LoadingOverlay({ phase }: LoadingOverlayProps) {
   const { t } = useTranslation();
 
-  const messages = {
+  const messages: Record<string, string> = {
     init: t("loading.initializing"),
     detect: t("loading.detecting"),
     process: t("loading.processing_result"),

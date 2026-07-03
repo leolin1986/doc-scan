@@ -50,6 +50,8 @@ export default function ImageProcessor() {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
+  const imagesRef = useRef<string[]>([]);
+  imagesRef.current = images;
 
   const currentImage = images[selectedIndex] || null;
 
@@ -60,18 +62,19 @@ export default function ImageProcessor() {
     { id: "color", label: t("modes.color"), desc: t("modes.color_desc"), icon: "🌈" },
   ];
 
-  // 加载多张图片（异步批量）
+  // 加载多张图片（并行读取）
   const loadImages = useCallback(async (files: File[]): Promise<string[]> => {
-    const batches: string[] = [];
-    for (const file of files) {
-      const url = await new Promise<string>((resolve) => {
-        const reader = new FileReader();
-        reader.onload = (e) => resolve(e.target?.result as string);
-        reader.readAsDataURL(file);
-      });
-      batches.push(url);
-    }
-    return batches;
+    return Promise.all(
+      files.map(
+        (file) =>
+          new Promise<string>((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = (e) => resolve(e.target?.result as string);
+            reader.onerror = () => reject(new Error("文件读取失败"));
+            reader.readAsDataURL(file);
+          })
+      )
+    );
   }, []);
 
   // 处理图片上传
@@ -87,39 +90,48 @@ export default function ImageProcessor() {
 
       const newUrls = await loadImages(files);
 
-      setImages((prev) => {
-        if (prev.length + newUrls.length > MAX_IMAGES) {
-          alert(
-            t("upload.alert_max", {
-              max: MAX_IMAGES,
-              current: prev.length,
-              remain: MAX_IMAGES - prev.length,
-            })
-          );
-          return prev;
-        }
-        // 获取第一张新图的尺寸
-        const img = new Image();
-        img.onload = () =>
-          setImageDimensions({ w: img.naturalWidth, h: img.naturalHeight });
-        img.src = newUrls[0];
-        // 选中第一张新图
-        setSelectedIndex(prev.length);
-        setLastCorners(null);
-        return [...prev, ...newUrls];
-      });
+      if (images.length + newUrls.length > MAX_IMAGES) {
+        alert(
+          t("upload.alert_max", {
+            max: MAX_IMAGES,
+            current: images.length,
+            remain: MAX_IMAGES - images.length,
+          })
+        );
+        return;
+      }
+      const nextImages = [...images, ...newUrls];
+      setSelectedIndex(images.length);
+      setLastCorners(null);
+      setImages(nextImages);
+      const img = new Image();
+      img.onload = () =>
+        setImageDimensions({ w: img.naturalWidth, h: img.naturalHeight });
+      img.src = newUrls[0];
     },
-    [loadImages, t]
+    [loadImages, t, images]
   );
 
   // 拖放处理（支持多文件）
-  const handleDragOver = (e: React.DragEvent) => {
+  const dragCountRef = useRef(0);
+  const handleDragEnter = (e: React.DragEvent) => {
     e.preventDefault();
+    dragCountRef.current++;
     setIsDragOver(true);
   };
-  const handleDragLeave = () => setIsDragOver(false);
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+  };
+  const handleDragLeave = (e: React.DragEvent) => {
+    dragCountRef.current--;
+    if (dragCountRef.current <= 0) {
+      dragCountRef.current = 0;
+      setIsDragOver(false);
+    }
+  };
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
+    dragCountRef.current = 0;
     setIsDragOver(false);
     if (e.dataTransfer.files.length > 0) handleFiles(e.dataTransfer.files);
   };
@@ -134,6 +146,7 @@ export default function ImageProcessor() {
 
   // 切换选中的图片
   const handleSelectImage = (index: number) => {
+    if (index < 0 || index >= images.length) return;
     setSelectedIndex(index);
     setLastCorners(null);
     // 更新尺寸信息
@@ -168,7 +181,7 @@ export default function ImageProcessor() {
       } else {
         // 调整选中索引
         setSelectedIndex((sel) => {
-          if (sel === index) return Math.min(0, next.length - 1);
+          if (sel === index) return 0;
           if (sel > index) return sel - 1;
           return sel;
         });
@@ -207,15 +220,21 @@ export default function ImageProcessor() {
     setShowEditor(false);
     if (!currentImage) return;
 
+    const capturedIndex = selectedIndex;
+    const capturedSrc = currentImage;
     setLastCorners(corners);
     setLoadingPhase("process");
     try {
       const res = await processImageWithCorners(
-        currentImage,
+        capturedSrc,
         corners,
         activeMode
       );
-      setProcessedImages((prev) => ({ ...prev, [selectedIndex]: res }));
+      setProcessedImages((prev) => {
+        // 用 ref 读最新 images，避免闭包捕获的 images 过期
+        if (imagesRef.current[capturedIndex] !== capturedSrc) return prev;
+        return { ...prev, [capturedIndex]: res };
+      });
     } catch (err: any) {
       console.error("手动校正处理失败:", err);
       alert(t("error.process_fail", { msg: err?.message || err || "未知错误" }));
@@ -287,6 +306,7 @@ export default function ImageProcessor() {
             key={mode.id}
             className={`mode-btn ${activeMode === mode.id ? "active" : ""}`}
             onClick={() => setActiveMode(mode.id)}
+            disabled={loadingPhase !== "idle"}
           >
             <span className="mr-1">{mode.icon}</span>
             {mode.label}
@@ -320,6 +340,7 @@ export default function ImageProcessor() {
             className={`drop-zone rounded-2xl p-6 md:p-12 text-center cursor-pointer ${
               isDragOver ? "drag-over" : ""
             }`}
+            onDragEnter={handleDragEnter}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
@@ -341,6 +362,7 @@ export default function ImageProcessor() {
             <div
               className="relative rounded-lg overflow-hidden bg-gray-100"
               style={{ maxHeight: "60vh" }}
+              onDragEnter={handleDragEnter}
               onDragOver={handleDragOver}
               onDragLeave={handleDragLeave}
               onDrop={handleDrop}
@@ -365,7 +387,7 @@ export default function ImageProcessor() {
           {/* 缩略图条 */}
           <div className="flex gap-2 mb-4 flex-wrap">
             {images.map((src, i) => (
-              <div key={i} className="relative">
+              <div key={src} className="relative">
                 <button
                   onClick={() => handleSelectImage(i)}
                   className={`w-16 h-16 rounded-lg overflow-hidden border-2 transition-all ${

@@ -641,8 +641,12 @@ function detectCorners(imageData: ImageData): {
   }
 
   // 策略 3：亮度检测（文档通常比背景亮）
-  const brightResult = detectCornersFromBrightness(gray, sw, sh, scale);
-  gray.delete();
+  let brightResult: { corners: CornerPoints | null } = { corners: null };
+  try {
+    brightResult = detectCornersFromBrightness(gray, sw, sh, scale);
+  } finally {
+    gray.delete();
+  }
   if (brightResult.corners) {
     const invScale = 1 / scale;
     const scaledCorners: CornerPoints = brightResult.corners.map(p => ({
@@ -728,12 +732,12 @@ async function processImageAsync(
 ): Promise<{ pixels: ArrayBuffer; width: number; height: number }> {
   const src = cv.matFromImageData(imageData);
 
-  const docW = Math.round(
+  const docW = Math.max(1, Math.round(
     Math.max(dist(corners[0], corners[1]), dist(corners[3], corners[2]))
-  );
-  const docH = Math.round(
+  ));
+  const docH = Math.max(1, Math.round(
     Math.max(dist(corners[0], corners[3]), dist(corners[1], corners[2]))
-  );
+  ));
 
   const srcPts = cv.matFromArray(4, 1, cv.CV_32FC2, [
     corners[0].x,
