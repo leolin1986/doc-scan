@@ -105,6 +105,7 @@
   "about.feat4": "Three scan modes: B&W / Color / Shadow Removal",
   "about.privacy_title": "Privacy",
   "about.privacy_desc": "Your images are never uploaded to any server. All processing is done locally. We do not collect any personal information.",
+  "about.web_version": "Web version: ",
 
   "meta.title": "Image to Scan Online | DocScan - Free Document Scanner",
   "meta.description": "Free online image-to-scan tool with auto edge detection, perspective correction, and image enhancement. B&W scan, color scan, shadow removal modes.",
