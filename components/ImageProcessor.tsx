@@ -49,7 +49,6 @@ export default function ImageProcessor() {
   const [imageDimensions, setImageDimensions] = useState({ w: 0, h: 0 });
 
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const cameraInputRef = useRef<HTMLInputElement>(null);
   const imagesRef = useRef<string[]>([]);
   imagesRef.current = images;
 
@@ -143,6 +142,36 @@ export default function ImageProcessor() {
       e.target.value = "";
     }
   };
+
+  // 原生设备：拍照 / 从相册选择（使用 Capacitor Camera 插件）
+  const handleNativeImage = useCallback(async (source: "camera" | "gallery") => {
+    if (images.length >= MAX_IMAGES) {
+      alert(t("upload.alert_max", { max: MAX_IMAGES, current: images.length, remain: 0 }));
+      return;
+    }
+    try {
+      const { Camera, CameraSource, CameraResultType } = await import("@capacitor/camera");
+      const photo = await Camera.getPhoto({
+        source: source === "camera" ? CameraSource.Camera : CameraSource.Photos,
+        quality: 90,
+        width: 1920,
+        allowEditing: false,
+        resultType: CameraResultType.DataUrl,
+      });
+      if (!photo.dataUrl) return;
+      const newIdx = images.length;
+      setLastCorners(null);
+      setImages((prev) => [...prev, photo.dataUrl!]);
+      setSelectedIndex(newIdx);
+      const img = new Image();
+      img.onload = () => setImageDimensions({ w: img.naturalWidth, h: img.naturalHeight });
+      img.src = photo.dataUrl;
+    } catch (err: any) {
+      if (err?.message !== "User cancelled photos app") {
+        console.error(`${source} error:`, err);
+      }
+    }
+  }, [images.length, t]);
 
   // 切换选中的图片
   const handleSelectImage = (index: number) => {
@@ -321,13 +350,13 @@ export default function ImageProcessor() {
             <div className="text-5xl mb-4">📷</div>
             <button
               className="btn-primary w-full text-lg py-4"
-              onClick={(e) => { e.stopPropagation(); cameraInputRef.current?.click(); }}
+              onClick={(e) => { e.stopPropagation(); handleNativeImage("camera"); }}
             >
               {t("upload.take_photo")}
             </button>
             <button
               className="btn-secondary w-full text-lg py-4"
-              onClick={(e) => { e.stopPropagation(); fileInputRef.current?.click(); }}
+              onClick={(e) => { e.stopPropagation(); handleNativeImage("gallery"); }}
             >
               {t("upload.from_gallery")}
             </button>
@@ -415,7 +444,7 @@ export default function ImageProcessor() {
             ))}
             {images.length < MAX_IMAGES && (
               <button
-                onClick={() => fileInputRef.current?.click()}
+                onClick={() => isNative ? handleNativeImage("gallery") : fileInputRef.current?.click()}
                 className="w-16 h-16 rounded-lg border-2 border-dashed border-gray-300 hover:border-violet-400 text-gray-400 hover:text-violet-500 text-2xl flex items-center justify-center transition-colors"
                 title={t("preview.add_title")}
               >
@@ -506,17 +535,6 @@ export default function ImageProcessor() {
         onChange={handleInputChange}
         className="hidden"
       />
-      {/* 隐藏的 camera input（原生环境拍照用） */}
-      {isNative && (
-        <input
-          ref={cameraInputRef}
-          type="file"
-          accept="image/*"
-          capture="environment"
-          onChange={handleInputChange}
-          className="hidden"
-        />
-      )}
     </div>
   );
 }
