@@ -2,6 +2,7 @@
   "nav.scan": "Start Scanning",
   "nav.guide": "User Guide",
   "nav.about": "About Us",
+  "nav.download_app": "Android App",
 
   "hero.title_prefix": "Turn Images into",
   "hero.title_highlight": "Clean Scans",
@@ -86,6 +87,13 @@
   "guide.tip3": "Supports processing up to 3 images at once",
   "guide.manual_title": "Manual Adjust",
   "guide.manual_desc": "Click \"Manual Adjust\" to open the corner editor. You can drag the four blue markers to precisely adjust the crop area. Pinch to zoom for details.",
+
+  "android_promo.title": "DocScan Android is Live",
+  "android_promo.subtitle": "Now on Huawei AppGallery — download and try",
+  "android_promo.download": "Download",
+  "android_promo.dismiss": "Dismiss",
+  "android_promo.non_huawei_note": "Note: For non-Huawei phones, open the link below in your browser",
+  "android_promo.store_link": "Huawei AppGallery Link",
 
   "about.title": "About Us",
   "about.version": "Version {version}",

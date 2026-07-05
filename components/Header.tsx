@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useTranslation } from "@/i18n";
 import LanguageSwitcher from "./LanguageSwitcher";
+import AndroidDownloadModal from "./AndroidDownloadModal";
 
 export default function Header() {
   const { t } = useTranslation();
@@ -24,6 +25,7 @@ export default function Header() {
           <Link href="/about" className="text-gray-600 hover:text-blue-600 transition-colors py-1.5 px-2 md:py-2.5 min-h-[44px] md:min-h-0 flex items-center">
             {t("nav.about")}
           </Link>
+          <AndroidDownloadModal />
           <LanguageSwitcher />
         </nav>
       </div>

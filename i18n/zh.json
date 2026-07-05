@@ -2,6 +2,7 @@
   "nav.scan": "开始扫描",
   "nav.guide": "使用说明",
   "nav.about": "关于我们",
+  "nav.download_app": "下载App",
 
   "hero.title_prefix": "一键把图片变成",
   "hero.title_highlight": "干净扫描件",
@@ -86,6 +87,13 @@
   "guide.tip3": "支持一次处理最多 3 张图片",
   "guide.manual_title": "手动调整",
   "guide.manual_desc": "点击「手动调整」会打开角点编辑器，您可以拖动四个蓝色标记点来精确调整裁剪区域。双指缩放可以查看细节。",
+
+  "android_promo.title": "扫立得 Android 版已上线",
+  "android_promo.subtitle": "已上架华为应用市场，扫码下载体验",
+  "android_promo.download": "去下载",
+  "android_promo.dismiss": "关闭",
+  "android_promo.non_huawei_note": "注：非华为手机用户请使用浏览器访问以下链接",
+  "android_promo.store_link": "华为应用市场链接",
 
   "about.title": "关于我们",
   "about.version": "版本 {version}",
