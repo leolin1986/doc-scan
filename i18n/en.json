@@ -118,5 +118,20 @@
   "privacy.link": "View full Privacy Policy",
   "privacy.agree": "I have read and agree to the Privacy Policy",
   "privacy.confirm": "Agree & Continue",
-  "privacy.reject": "Disagree & Exit"
+  "privacy.reject": "Disagree & Exit",
+
+  "feedback.button": "Feedback",
+  "feedback.rating_label": "Rating",
+  "feedback.category_label": "Category",
+  "feedback.category_bug": "Bug Report",
+  "feedback.category_feature": "Feature Suggestion",
+  "feedback.category_other": "Other",
+  "feedback.message_placeholder": "Describe your feedback or issue...",
+  "feedback.email_placeholder": "Optional: Email (for us to reply)",
+  "feedback.submit": "Submit Feedback",
+  "feedback.submitting": "Submitting...",
+  "feedback.success": "Thank you for your feedback!",
+  "feedback.error": "Submission failed, please try again",
+  "feedback.rating_required": "Please select a rating",
+  "feedback.message_required": "Please enter your message"
 }

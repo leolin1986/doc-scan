@@ -118,5 +118,20 @@
   "privacy.link": "查看完整隐私政策",
   "privacy.agree": "我已阅读并同意《隐私政策》",
   "privacy.confirm": "同意并继续",
-  "privacy.reject": "不同意并退出"
+  "privacy.reject": "不同意并退出",
+
+  "feedback.button": "反馈",
+  "feedback.rating_label": "评分",
+  "feedback.category_label": "分类",
+  "feedback.category_bug": "Bug 报告",
+  "feedback.category_feature": "功能建议",
+  "feedback.category_other": "其他留言",
+  "feedback.message_placeholder": "请描述您的意见或遇到的问题...",
+  "feedback.email_placeholder": "选填：邮箱（方便我们回复您）",
+  "feedback.submit": "提交反馈",
+  "feedback.submitting": "提交中...",
+  "feedback.success": "感谢您的反馈！",
+  "feedback.error": "提交失败，请稍后重试",
+  "feedback.rating_required": "请选择评分",
+  "feedback.message_required": "请输入留言内容"
 }

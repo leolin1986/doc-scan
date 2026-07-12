@@ -1,0 +1,28 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx next *)",
+      "Bash(npm run *)",
+      "Bash(npx cap *)",
+      "Bash(./gradlew.bat assembleRelease)",
+      "Read(//d/Android/jbr/bin/**)",
+      "Read(//c/Program Files/Android/Android Studio/jbr/bin/**)",
+      "Bash(where java *)",
+      "Bash(java -version)",
+      "Read(//d/Android/Androidstudio/jbr/bin/**)",
+      "Read(//d/Android/Androidstudio/jre/bin/**)",
+      "Bash(JAVA_HOME=\"D:/Android/Androidstudio/jbr\" ./gradlew.bat assembleRelease)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git pull *)",
+      "WebSearch",
+      "WebFetch(domain:developer.huawei.com)",
+      "WebFetch(domain:github.com)",
+      "Bash(npm search *)",
+      "WebFetch(domain:ads.huawei.com)",
+      "WebFetch(domain:www.huaweicloud.com)",
+      "WebFetch(domain:www.jianshu.com)",
+      "Bash(curl -s http://localhost:3000)"
+    ]
+  }
+}
