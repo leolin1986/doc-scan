@@ -5,6 +5,7 @@ import Footer from "@/components/Footer";
 import PrivacyPolicyDialog from "@/components/PrivacyPolicyDialog";
 import BackButtonHandler from "@/components/BackButtonHandler";
 import AnalyticsScript from "./AnalyticsScript";
+import FeedbackButton from "@/components/FeedbackButton";
 import { I18nProvider } from "@/i18n";
 import zh from "@/i18n/zh.json";
 
@@ -44,6 +45,7 @@ export default function RootLayout({
           <PrivacyPolicyDialog />
           <Header />
           <main className="flex-1">{children}</main>
+          {!isCapacitor && <FeedbackButton />}
           <Footer />
           {!isCapacitor && <AnalyticsScript />}
         </I18nProvider>
