@@ -1,11 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import PrivacyPolicyDialog from "@/components/PrivacyPolicyDialog";
 import BackButtonHandler from "@/components/BackButtonHandler";
-import AnalyticsScript from "./AnalyticsScript";
-import FeedbackButton from "@/components/FeedbackButton";
+import DesktopLayoutShell from "@/components/DesktopLayoutShell";
 import { I18nProvider } from "@/i18n";
 import zh from "@/i18n/zh.json";
 
@@ -42,12 +38,7 @@ export default function RootLayout({
       <body className="min-h-screen flex flex-col">
         <I18nProvider>
           <BackButtonHandler />
-          <PrivacyPolicyDialog />
-          <Header />
-          <main className="flex-1">{children}</main>
-          {!isCapacitor && <FeedbackButton />}
-          <Footer />
-          {!isCapacitor && <AnalyticsScript />}
+          <DesktopLayoutShell>{children}</DesktopLayoutShell>
         </I18nProvider>
       </body>
     </html>

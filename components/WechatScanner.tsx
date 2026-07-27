@@ -182,7 +182,7 @@ export default function WechatScanner() {
           />
         </div>
         {/* 底部操作 */}
-        <div className="bg-white px-4 py-4 border-t border-gray-200 space-y-3">
+        <div className="bg-white px-4 py-4 border-t border-gray-200 space-y-3" style={{ paddingBottom: 'env(safe-area-inset-bottom, 16px)' }}>
           <p className="text-center text-sm text-gray-500">
             👆 长按图片保存到手机
           </p>
@@ -218,13 +218,13 @@ export default function WechatScanner() {
       </div>
 
       {/* 底部操作栏 */}
-      <div className="bg-white px-4 py-4 border-t border-gray-200 space-y-3">
+      <div className="bg-white px-4 py-4 border-t border-gray-200 space-y-3" style={{ paddingBottom: 'env(safe-area-inset-bottom, 16px)' }}>
         {/* 模式选择 */}
         <div className="flex gap-2">
           {SCAN_MODES.map((mode) => (
             <button
               key={mode.id}
-              className={`flex-1 py-3 rounded-xl text-sm font-medium transition-all ${
+              className={`flex-1 py-3 rounded-xl text-sm font-medium transition-all min-h-[48px] ${
                 activeMode === mode.id
                   ? "bg-blue-600 text-white shadow-sm"
                   : "bg-gray-100 text-gray-600 active:bg-gray-200"

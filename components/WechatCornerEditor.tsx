@@ -27,10 +27,12 @@ export default function WechatCornerEditor({
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const zoomRef = useRef(1);
   const panRef = useRef({ x: 0, y: 0 });
+  const layoutRef = useRef({ x: 0, y: 0, w: 1, h: 1 });
   const pinchRef = useRef({
     initialDist: 0, initialZoom: 1,
     initialPanX: 0, initialPanY: 0,
     centerX: 0, centerY: 0,
+    ox: 0, oy: 0,
   });
 
   // 计算图片在容器中的实际显示位置（object-contain 等效）
@@ -53,6 +55,7 @@ export default function WechatCornerEditor({
       x = (cw - dw) / 2;
     }
     setImgLayout({ x, y, w: dw, h: dh, scale: dw / imageWidth });
+    layoutRef.current = { x, y, w: dw, h: dh };
   }, [imageWidth, imageHeight]);
 
   useEffect(() => {
@@ -137,10 +140,12 @@ export default function WechatCornerEditor({
         e.preventDefault();
         const d = getDist(e.touches[0], e.touches[1]);
         const c = getCenter(e.touches[0], e.touches[1]);
+        const l = layoutRef.current;
         pinchRef.current = {
           initialDist: d, initialZoom: zoomRef.current,
           initialPanX: panRef.current.x, initialPanY: panRef.current.y,
           centerX: c.x, centerY: c.y,
+          ox: l.x + l.w / 2, oy: l.y + l.h / 2,
         };
       }
     };
@@ -150,10 +155,11 @@ export default function WechatCornerEditor({
         const d = getDist(e.touches[0], e.touches[1]);
         if (d === 0) return;
         const c = getCenter(e.touches[0], e.touches[1]);
-        const { initialDist, initialZoom, initialPanX, initialPanY, centerX, centerY } = pinchRef.current;
+        const { initialDist, initialZoom, initialPanX, initialPanY, centerX, centerY, ox, oy } = pinchRef.current;
         const newZoom = Math.max(1, Math.min(5, initialZoom * (d / initialDist)));
-        const newPanX = initialPanX + (c.x - centerX);
-        const newPanY = initialPanY + (c.y - centerY);
+        const ratio = newZoom / initialZoom;
+        const newPanX = c.x - ratio * (centerX - initialPanX) + (ratio - 1) * ox;
+        const newPanY = c.y - ratio * (centerY - initialPanY) + (ratio - 1) * oy;
         zoomRef.current = newZoom;
         panRef.current = { x: newPanX, y: newPanY };
         setZoom(newZoom);
@@ -208,7 +214,7 @@ export default function WechatCornerEditor({
           draggable={false}
           style={{
             transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
-            transformOrigin: `${imgLayout.x}px ${imgLayout.y}px`,
+            transformOrigin: `${imgLayout.x + imgLayout.w/2}px ${imgLayout.y + imgLayout.h/2}px`,
           }}
         />
         {/* 四边形覆盖层 */}
