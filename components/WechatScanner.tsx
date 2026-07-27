@@ -25,7 +25,6 @@ export default function WechatScanner() {
   const [showEditor, setShowEditor] = useState(false);
   const [imageDimensions, setImageDimensions] = useState({ w: 0, h: 0 });
   const [showResult, setShowResult] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const imageSrcRef = useRef<string | null>(null);
   imageSrcRef.current = imageSrc;
 
@@ -80,6 +79,7 @@ export default function WechatScanner() {
       setLastCorners(det.corners);
       if (det.corners) {
         setImageDimensions({ w: det.width, h: det.height });
+        setPhase("idle");
         setShowEditor(true);
       } else {
         // 没检测到角点，直接全图处理
@@ -98,7 +98,7 @@ export default function WechatScanner() {
     } catch (err: any) {
       alert("检测失败: " + (err?.message || err));
     } finally {
-      if (phase === "init" || phase === "detect") setPhase("idle");
+      setPhase("idle");
     }
   };
 
@@ -128,7 +128,9 @@ export default function WechatScanner() {
       link.download = `scanned_${Date.now()}.${result.format}`;
       link.href = result.dataUrl;
       link.click();
-    } catch {}
+    } catch {
+        // WeChat browser blocks download links via click(); silently swallow
+      }
   };
 
   // 重新上传
